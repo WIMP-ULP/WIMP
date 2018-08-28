@@ -1,6 +1,7 @@
 package actividades;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +23,9 @@ import android.support.v7.app.AppCompatCallback;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -262,15 +266,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             /*Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.oferta.educacion.ulp&hl=es");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);*/
+        }else if(id == R.id.nav_send){
+
+            Intent intent = new Intent(this, LoginActivity.class);
+
+            if(!getFromSharedPreferences("facebook").equals("") && getFromSharedPreferences("facebook").equals("FB"))
+            {
+                cerrarFacebook();
+            }else
+            {
+                SharedPreferences sh = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor e = sh.edit();
+                e.clear();
+                e.apply();
+            }
+
+
+
+            startActivity(intent);
+            finish();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    private void   cerrarFacebook()
+    {
+        LoginManager.getInstance().logOut();
+    }
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+    }
+
+    public String getFromSharedPreferences(String key){
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        return sharedPreferences.getString(key,"");
     }
 
 
