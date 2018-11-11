@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ContenedorRegistro"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_login">
+
+    <View
+        android:id="@+id/divider_config2"
+        android:layout_width="300dp"
+        android:layout_height="3dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="#C8C9CB"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgPerfilDBRegistro" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imgPerfilDBRegistro"
+        android:layout_width="100dp"
+        android:layout_height="102dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/perfildb"
+        android:src="@drawable/com_facebook_profile_picture_blank_square"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <RelativeLayout
+
+        android:id="@+id/DatosPersonales"
+        android:layout_width="match_parent"
+        android:layout_height="406dp"
+        android:layout_alignTop="@+id/divider_config2"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/divider_config2">
+
+        <EditText
+            android:id="@+id/nombreRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="11dp"
+            android:background="#11000000"
+            android:drawableStart="@drawable/ic_action_user"
+            android:ems="10"
+            android:hint="@string/nombre"
+            android:inputType="textPersonName"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+        <EditText
+            android:id="@+id/apellidoRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="75dp"
+            android:background="#11000000"
+            android:drawableStart="@drawable/ic_action_user"
+            android:ems="10"
+            android:hint="@string/apellido"
+            android:inputType="textPersonName"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@+id/nombreRegistro"
+            tools:layout_editor_absoluteX="16dp" />
+
+        <EditText
+            android:id="@+id/emailRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="139dp"
+            android:background="#11000000"
+            android:drawableStart="@drawable/ic_action_mail"
+            android:ems="10"
+            android:hint="@string/correo_electronico"
+            android:inputType="textPersonName"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            tools:ignore="TextFields"
+            tools:layout_editor_absoluteX="16dp" />
+
+        <EditText
+            android:id="@+id/confirmar_emailRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+
+            android:layout_below="@+id/emailRegistro"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="157dp"
+            android:background="#11000000"
+            android:drawableStart="@drawable/ic_action_mail"
+            android:ems="10"
+            android:hint="Confirmar Correo Electronico"
+            android:inputType="textPersonName"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            tools:ignore="TextFields"
+            tools:layout_editor_absoluteX="16dp" />
+
+        <EditText
+            android:id="@+id/passRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="93dp"
+            android:background="#11000000"
+            android:drawableStart="@drawable/ic_action_pass"
+            android:ems="10"
+            android:hint="@string/contrase_a"
+            android:inputType="textPassword"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            tools:layout_editor_absoluteX="0dp" />
+
+        <EditText
+            android:id="@+id/confirmpassRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="28dp"
+            android:background="#11000000"
+            android:drawableStart="@drawable/ic_action_pass"
+            android:ems="10"
+            android:hint="@string/confirmar_contrase_a"
+            android:inputType="textPassword"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            tools:layout_editor_absoluteX="0dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+
+
+
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_below="@+id/DatosPersonales"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/DatosPersonales"
+        app:layout_constraintVertical_bias="0.387">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/CheckIn"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="19dp"
+            app:cardBackgroundColor="@color/colorAccent"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="10dp"
+            tools:layout_editor_absoluteX="50dp"
+            tools:layout_editor_absoluteY="526dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tvRegistrar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/registrar"
+                    android:textColor="#fff"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>

@@ -116,10 +116,12 @@ import java.util.Objects;
 
 import Modelo.Comentario;
 import Modelo.Marcadores;
+import Modelo.PreferenciasLogin;
 import Modelo.Publicidad;
 import Modelo.Tienda;
 import Modelo.Usuario;
 import adaptadores.AdaptadorComentarios;
+import adaptadores.AdaptadorMascota;
 import adaptadores.AdaptadorPublicidades;
 import de.hdodenhof.circleimageview.CircleImageView;
 import dialogsFragments.DialogMarkerPet;
@@ -168,15 +170,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // FLOATING ACTION BUTTON
     FloatingActionButton mFloatingActionButtonMarkers;
 
-
-
     private ArrayList<Mascota>ListaMarcadoresMacota;
     private ArrayList<Tienda>ListaMarcadoresTienda;
     private ArrayList<Comentario>ListaComentario;
     private ArrayList<Publicidad>ListaPublicidad;
-    private ArrayList<Comentario> ListaComentarioFinal;
-    private RecyclerView recyclerComentarios;
-    private RecyclerView recyclerPublicidad;
+
+   //private ArrayList<Mascota>ListaMascotaSiguiendo;
+    RecyclerView recyclerComentarios;
+    RecyclerView recyclerPublicidad;
+    RecyclerView recyclerFavoritos;
 
     private Map<String,ArrayList<Mascota>> mListaMarcadoresMascotas;
     private Map<String,ArrayList<Tienda>> mListaMarcadoresTiendas;
@@ -317,7 +319,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void VolverAlLogin(final String cerrar_sesion) {
-        GuardarTipoDeLogin(cerrar_sesion);
+
+        GuardarTipoDeLogin(new PreferenciasLogin().setTipoSignOut(cerrar_sesion).setRecordarUsuario(false));
         Intent i = new Intent(this, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -621,12 +624,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     }
 
-    private void GuardarTipoDeLogin(final String cerrar_sesion){
-        /*SharedPreferences mSharedPreferences = this.getSharedPreferences("Login",Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mSharedPreferences.edit();*/
+    private void GuardarTipoDeLogin(final PreferenciasLogin cerrar_sesion){
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("type_sign_out",cerrar_sesion);
+        editor.putString("type_sign_out",cerrar_sesion.getTipoSignOut());
+        editor.putString("type_sign_in",cerrar_sesion.getTipoSignOut());
+        editor.putBoolean("remember",cerrar_sesion.isRecordarUsuario());
         editor.apply();
     }
     private void GuardarNotificacionesCercanas(boolean cercanas)
@@ -991,6 +994,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // ------------------------ DIALOG MIS MASCOTAS-----------------------------------------
     @SuppressLint("ValidFragment")
     private class MisMascotasDialog extends DialogFragment {
+        private ArrayList<Mascota>ListaMisMascotas;
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -1004,9 +1008,47 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
                 return false;
             });
+            ListaMisMascotas=new ArrayList<>();
+            CargarDatosMascotaRecyclerMisMascotas(content);
             return builder.create();
         }
+        private void CargarDatosMascotaRecyclerMisMascotas(View view) {
+            mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Marcadores").child("Pet").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.i("Pet", dataSnapshot.toString());
+
+                    for(DataSnapshot d:dataSnapshot.getChildren()){
+
+                        Mascota mMascota = d.getValue(Mascota.class);
+                        ListaMisMascotas.add(mMascota);
+
+                    }
+
+                    recyclerFavoritos = view.findViewById(R.id.RecViewFavoritos);
+                    recyclerFavoritos.setLayoutManager(new LinearLayoutManager(view.getContext()));
+                    AdaptadorMascota adapter = new AdaptadorMascota(ListaMisMascotas,view.getContext());
+                    recyclerFavoritos.setAdapter(adapter);
+
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
     }
+///este metodo tiene que ver donde se  van a aguardar los favoritos  reccorrerlo, por eso salta el error en la line 1010
+
+
+    //cuando llames al boton de fb, deves ahcer lo mismo pero asigandole a listaFavorito y setear el campo del dialogo  que dice mis mascotas,  a mis favoritos...
+
+
+
+
+
+
 
     private void instaciarMisMascotas() {
         MisMascotasDialog dialog = new MisMascotasDialog();  //Instanciamos la clase con el dialogo
