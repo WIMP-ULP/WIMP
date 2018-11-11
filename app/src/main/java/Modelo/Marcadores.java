@@ -1,9 +1,6 @@
 package Modelo;
 
 public class Marcadores {
-
-
-
     private String idMarcador;
     private String nombre;
     private String descripcion;

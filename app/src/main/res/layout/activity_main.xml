@@ -22,6 +22,9 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
+        app:itemIconTint="@color/colorAccent"
+        app:itemTextAppearance="@style/TextAppearance.AppCompat.Widget.DropDownItem"
+        app:itemTextColor="@color/colorPrimaryDark"
         app:menu="@menu/activity_main_drawer">
 
         <android.support.design.widget.FloatingActionButton
@@ -32,14 +35,13 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_gravity="fill_vertical|end"
-            app:layout_anchorGravity="fill_vertical|end"
             android:layout_marginTop="150dp"
             android:clickable="true"
             android:fadeScrollbars="false"
             android:focusable="true"
             app:backgroundTint="@android:color/transparent"
             app:fabSize="normal"
-
+            app:layout_anchorGravity="fill_vertical|end"
             app:srcCompat="@drawable/messenger_bubble_small_blue" />
     </android.support.design.widget.NavigationView>
 

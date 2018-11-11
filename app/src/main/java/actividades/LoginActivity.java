@@ -55,6 +55,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -81,6 +82,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import Modelo.Mascota;
 import Modelo.PreferenciasLogin;
 import Modelo.Usuario;
 import finalClass.GeneralMethod;
@@ -518,7 +520,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         private DatabaseReference mDatabase;
         private StorageReference mStorageReference;
         //----------------------------------------CICLOS DE VIDA DEL DIALOG-------------------------------------
-
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -613,11 +614,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                             .setApellido(mApellidoRegistroEditText.getText().toString());
                                     mEstado = "registro";
                                     if(!tipoDeFoto.equals("VACIO")) {
-                                        storageIMG(mUserFireBase.getUid(),mDatabase,mUserPublic);
+                                        storageIMG(mUserPublic);
                                     }
                                     else{
-                                        mDatabase.child("Usuarios").child(Objects.requireNonNull(mUserFireBase.getUid())).child("Datos Personales").setValue(mUserPublic);
-                                        mDatabase.child("Usuarios").child(Objects.requireNonNull(mUserFireBase.getUid())).child("Datos Personales").child("imagen").setValue(defaultUser);
+                                        mUserPublic.setImagen(defaultUser);
+                                       SubirRealtimeDatabase(mUserPublic);
                                     }
                                     final FirebaseUser firebaseUser = Objects.requireNonNull(task.getResult()).getUser();
                                     firebaseUser.sendEmailVerification();
@@ -634,17 +635,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 GeneralMethod.showSnackback("Algunos campos se encuentran vacios, por favor verifiquelos",mContrainerRegistro,RegistroDialog.this.getActivity());
             }
         }
-
-        public void storageIMG (final String currentUserDB, final DatabaseReference mDatabase, final Usuario.UsuarioPublico mUserPublic) {
-
-            final StorageReference mStorageImgPerfilUsuario = mStorageReference.child("Imagenes").child("Perfil").child(GeneralMethod.getRandomString());
-
-            mStorageImgPerfilUsuario.putFile(mFotoPerfilRegistro).addOnSuccessListener(this.getActivity(), taskSnapshot -> {
-                Task<Uri> taskUri = mStorageImgPerfilUsuario.getDownloadUrl();
-                final String UrlFoto = Objects.requireNonNull(taskUri.getResult()).toString().replace("\"", "");
-                mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB)).child("Datos Personales").setValue(mUserPublic);
-                mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB)).child("Datos Personales").child("imagen").setValue(UrlFoto);
-            }).addOnFailureListener(this.getActivity(), e -> Toast.makeText(RegistroDialog.this.getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show());
+        private void SubirRealtimeDatabase(final Usuario.UsuarioPublico mUserPublic){
+            mDatabase.child("Usuarios").child(Objects.requireNonNull(mUserFireBase.getUid())).child("Datos Personales").setValue(mUserPublic);
+            progressDialog.dismiss();
+        }
+        public void storageIMG (final Usuario.UsuarioPublico mUserPublic) {
+            final StorageReference mStorageImgPerfilUsuario =  mStorageReference.child("Imagenes").child("Perfil").child(GeneralMethod.getRandomString());
+            mStorageImgPerfilUsuario.putFile(mFotoPerfilRegistro).addOnSuccessListener(taskSnapshot -> mStorageImgPerfilUsuario.getDownloadUrl().addOnSuccessListener(uri -> {
+                mUserPublic.setImagen(uri.toString());
+                SubirRealtimeDatabase(mUserPublic);
+            })).addOnFailureListener(e -> { });
         }
 
         // METODOS COMPROBACION CAMPOS Y GENERANDO NOMBRE IMAGEN

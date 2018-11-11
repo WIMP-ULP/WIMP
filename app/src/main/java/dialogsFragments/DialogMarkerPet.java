@@ -29,15 +29,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.whereismypet.whereismypet.R;
 
 import java.io.File;
@@ -95,7 +93,6 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         builder.setView(content);
         builder.setPositiveButton("GUARDAR", (dialog, id) -> {
             Marcadores mMascota = new Mascota()
-                    .setIdComentario("jhnp78478u77jl87l")
                     .setIdMarcador(GeneralMethod.getRandomString())
                     .setNombre(mNombreMascotaMarcador.getText().toString())
                     .setDescripcion(mDescripcionMascotaMarcador.getText().toString())
@@ -141,36 +138,27 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         DatabaseReference currentUserDB = mDatabase.child(Objects.requireNonNull(mFirebaseAuth.getCurrentUser()).getUid());
 
         if(!tipoDeFoto.equals("VACIO")) {
-            storageIMG(currentUserDB,mDatabase,mMascota.getIdMarcador());
-            SubirRealtimeDatabase(currentUserDB,mMascota,mDatabase,mMascota.getIdMarcador());
+            storageIMG(currentUserDB,mMascota,mDatabase);
+
         }
         else{
             mMascota.setImagen(defaultPet);
-            SubirRealtimeDatabase(currentUserDB,mMascota,mDatabase,mMascota.getIdMarcador());
-         //acordate de esto renzo!!!!
-           //mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Pet").child(mMascota.getIdMarcador()).child("imagen").setValue(defaultPet);
+            SubirRealtimeDatabase(currentUserDB,mMascota,mDatabase);
         }
     }
 
-    private void SubirRealtimeDatabase(final DatabaseReference currentUserDB, final Mascota mMascota, final DatabaseReference mDatabase, final String idMarcador){
-        mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Pet").child(idMarcador).setValue(mMascota);
+    private void SubirRealtimeDatabase(final DatabaseReference currentUserDB, final Mascota mMascota, final DatabaseReference mDatabase){
+        mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Pet").child(mMascota.getIdMarcador()).setValue(mMascota);
         CreateMarkers(new LatLng(Double.valueOf(mMascota.getLatitud()),Double.valueOf(mMascota.getLongitud())),map, mMascota);
+        FirebaseMessaging.getInstance().subscribeToTopic(mMascota.getIdMarcador()).addOnSuccessListener(aVoid -> { });
         progressDialog.dismiss();
     }
-    private void storageIMG(final DatabaseReference currentUserDB, final DatabaseReference mDatabase, final String idMarcador ){
-        final StorageReference mStorageImgMarkerPet = mStorageReference.child("Imagenes").child("Marcadores").child("Pet").child(GeneralMethod.getRandomString());
-        mStorageImgMarkerPet.putFile(mUriMascotaMarcador).addOnSuccessListener(this.getActivity(), new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Task<Uri> taskUri = mStorageImgMarkerPet.getDownloadUrl();
-                mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Pet").child(idMarcador).child("imagen").setValue(taskUri);
-            }
-        }).addOnFailureListener(this.getActivity(), new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
+    private void storageIMG(final DatabaseReference currentUserDB, final Mascota mMascota, final DatabaseReference mDatabase){
+        final StorageReference mStorageImgPerfilUsuario = mStorageReference.child("Imagenes").child("Marcadores").child("Pet").child(GeneralMethod.getRandomString());
+        mStorageImgPerfilUsuario.putFile(mUriMascotaMarcador).addOnSuccessListener(taskSnapshot -> mStorageImgPerfilUsuario.getDownloadUrl().addOnSuccessListener(uri -> {
+            mMascota.setImagen(uri.toString());
+            SubirRealtimeDatabase(currentUserDB,mMascota,mDatabase);
+        })).addOnFailureListener(e -> { });
     }
 
     @Override
@@ -198,7 +186,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                 } break;
             }
         } else {
-            mFotoMascotaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeResource(getResources(),R.drawable.com_facebook_profile_picture_blank_square)));
+            mFotoMascotaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeResource(getResources(),R.drawable.huella_mascota)));
         }
     }
 
