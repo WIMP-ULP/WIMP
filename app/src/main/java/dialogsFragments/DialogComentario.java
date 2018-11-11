@@ -40,10 +40,8 @@ public class DialogComentario extends DialogFragment implements View.OnClickList
         @SuppressLint("InflateParams")
         View content = inflater.inflate(R.layout.dialog_comentar_marcador_mascota, null);
         eComentario = content.findViewById(R.id.eComentarMarcador);
-        eOk = content.findViewById(R.id.ImgOk);
-        eCancelar = content.findViewById(R.id.ImgCancelar);
-        eOk.setOnClickListener(this);
-        eCancelar.setOnClickListener(this);
+        eComentario.setOnClickListener(this);
+
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -56,8 +54,8 @@ public class DialogComentario extends DialogFragment implements View.OnClickList
     @Override
     public void onClick(View v) {
 
-    /*    switch (v.getId()){
-            case R.id.ImgOk:{
+       switch (v.getId()){
+            /* case R.id.ImgOk:{
                 Comentario mComentario= new Comentario()
                         .setCuerpo(eComentario.getText().toString())
                         .setIdUsuario(Objects.requireNonNull(mFirebaseAuth.getCurrentUser()).getUid());
@@ -66,8 +64,7 @@ public class DialogComentario extends DialogFragment implements View.OnClickList
 
             case R.id.ImgCancelar:{
                 dismiss();
-            }break;
+            }break;*/
         }
-    }*/
     }
 }

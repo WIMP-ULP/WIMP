@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -32,7 +31,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.database.DatabaseReference;
@@ -46,13 +44,12 @@ import java.io.IOException;
 import java.util.Objects;
 
 import Modelo.Marcadores;
-import Modelo.Mascota;
 import Modelo.Tienda;
 import finalClass.GeneralMethod;
 
 
 @SuppressLint("ValidFragment")
-public class DialogShop extends DialogFragment implements View.OnClickListener {
+public class DialogMarkerShop extends DialogFragment implements View.OnClickListener {
 
 
     private LatLng mLatLng;
@@ -73,7 +70,7 @@ public class DialogShop extends DialogFragment implements View.OnClickListener {
     private ProgressDialog progressDialog;
 
     private final String defautMarkerShop = "https://firebasestorage.googleapis.com/v0/b/wimp-219219.appspot.com/o/Imagenes%2FMarcadores%2FShop%2FdefaultShop.png?alt=media&token=ca7b5630-d219-489c-b0f5-a0a75daed0ac";
-    public DialogShop(GoogleMap map, LatLng latLng) {
+    public DialogMarkerShop(GoogleMap map, LatLng latLng) {
         this.mLatLng = latLng;
         this.mGoogleMap = map;
     }
@@ -147,13 +144,13 @@ public class DialogShop extends DialogFragment implements View.OnClickListener {
                     mUriTiendaMarcador = Objects.requireNonNull(data).getData();
                     tipoDeFoto = "SELECCIONA";
                     try {
-                        mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(MediaStore.Images.Media.getBitmap(DialogShop.this.getActivity().getContentResolver(), mUriTiendaMarcador)));
+                        mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(MediaStore.Images.Media.getBitmap(DialogMarkerShop.this.getActivity().getContentResolver(), mUriTiendaMarcador)));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }break;
                 case COD_FOTO: {
-                    MediaScannerConnection.scanFile(DialogShop.this.getActivity(), new String[]{pathCaptureShop}, null,(path, uri) -> Log.i("Path", "" + path));
+                    MediaScannerConnection.scanFile(DialogMarkerShop.this.getActivity(), new String[]{pathCaptureShop}, null,(path, uri) -> Log.i("Path", "" + path));
                     mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeFile(pathCaptureShop)));
                     mUriTiendaMarcador = Uri.fromFile(new File(pathCaptureShop));
                     tipoDeFoto = "FOTO";

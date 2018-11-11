@@ -21,7 +21,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -45,19 +44,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
-import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import com.facebook.AccessToken;
@@ -77,7 +74,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -95,8 +91,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.whereismypet.whereismypet.R;
 
 
@@ -126,7 +122,7 @@ import adaptadores.AdaptadorPublicidades;
 import de.hdodenhof.circleimageview.CircleImageView;
 import dialogsFragments.DialogMarkerPet;
 import Modelo.Mascota;
-import dialogsFragments.DialogShop;
+import dialogsFragments.DialogMarkerShop;
 import finalClass.GeneralMethod;
 import misclases.VolleySingleton;
 
@@ -231,11 +227,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         */
         ObtenerDatosPerfil();
 
-        escuchadorLinks();
+        Escuchador();
 
     }
 
-    private void escuchadorLinks() {
+    private void Escuchador() {
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())
                 .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
@@ -253,7 +249,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     public void onFailure(@NonNull Exception e) {
                         Log.w("mLinks", "getDynamicLink:onFailure", e);
                     }
-                });    }
+                });
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String newToken = instanceIdResult.getToken();
+            }
+        });
+    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -483,6 +486,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ListaComentario = new ArrayList<>();
         ListaPublicidad=new ArrayList<>();
         mDatabase.child("Usuarios").addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot mDataSnapshot : dataSnapshot.getChildren()){
@@ -494,7 +498,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             marker = (HashMap<String, Object>) dt.getValue();
                             if (marker != null) {
                                 ListaMarcadoresMacota.add((Mascota) new Mascota()
-                                        .setIdComentario(Objects.requireNonNull(marker.get("idComentario")).toString())
                                         .setIdMarcador(Objects.requireNonNull(marker.get("idMarcador")).toString())
                                         .setNombre(Objects.requireNonNull(marker.get("nombre")).toString())
                                         .setDescripcion(Objects.requireNonNull(marker.get("descripcion")).toString())
@@ -561,7 +564,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .snippet(myMarker.getDescripcion())
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.pet_markers)));
-
     }
     private void CargarMarcadoresTienda(final Tienda myMarker){
         LatLng latLng = new LatLng(Double.valueOf(myMarker.getLatitud()),Double.valueOf(myMarker.getLongitud()));
@@ -721,7 +723,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void instanciarDialogoMarcadorTienda(GoogleMap map,LatLng latLng){
-        DialogShop markerShop = new DialogShop(map,latLng);
+        DialogMarkerShop markerShop = new DialogMarkerShop(map,latLng);
         markerShop.setCancelable(false);
         markerShop.show(getFragmentManager(),"MARKER-SHOP");
     }
@@ -1325,6 +1327,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @SuppressLint("ValidFragment")
     private class DialogMostrarMarcadorMascota extends DialogFragment implements View.OnClickListener {
         Marcadores mDatosMascotas;
+        private EditText eComentario;
+        int estadoTeclado = 0;
         public DialogMostrarMarcadorMascota(Mascota mDatosMascotas){
             this.mDatosMascotas = mDatosMascotas;
         }
@@ -1334,6 +1338,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View content = inflater.inflate(R.layout.dialog_marcador, null);
+            eComentario = content.findViewById(R.id.eComentarMarcador);
+            eComentario.setOnClickListener(this);
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setView(content);
             builder.setOnKeyListener((dialog, keyCode, event) -> {
@@ -1348,6 +1354,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         @Override
         public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.eComentarMarcador:
+
+                    InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    if(estadoTeclado == 0){
+                        if (imm != null) {
+                            eComentario.setText("");
+                            estadoTeclado = 1;
+                        }
+                    }
+
+
+                    break;
+            }
 
         }
 
@@ -1363,9 +1383,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             CargarComentariosMascota(mMascota,view);
         }
 
+        // ver que el id de mascota esta en los comentarios relacion de 1 a muchos
         private void CargarComentariosMascota(Mascota mMascota,View view) {
-            mDatabase.child("Usuarios").child(Objects.requireNonNull(mMascota.getIdMarcador())).child("Marcadores")
-                    .child("Comentarios").child(mMascota.getIdComentario()).addValueEventListener(new ValueEventListener() {
+            mDatabase.child("Usuarios").child(Objects.requireNonNull(mMascota.getIdMarcador())).child("Marcadores").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Log.i("COMENTARIO", dataSnapshot.toString());
