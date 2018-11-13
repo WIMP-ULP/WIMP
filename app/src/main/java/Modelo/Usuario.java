@@ -2,13 +2,17 @@ package Modelo;
 
 import android.net.Uri;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Usuario {
 
 
-
+    private String idUsuario;
     private String email;
     private String contraseña;
-    private String idUsuario;
+
 
 
     public String getIdUsuario() {
@@ -48,13 +52,24 @@ public class Usuario {
         private String apellido;
         private String imagen;
 
+        public String getPremium() {
+            return premium;
+        }
+
+        public UsuarioPublico setPremium(String premium) {
+            this.premium = premium;
+            return this;
+        }
+
+        private String premium;
+
         public String getApellido() {
             return apellido;
         }
 
         public UsuarioPublico setApellido(String apellido) {
             this.apellido = apellido;
-            return UsuarioPublico.this;
+            return this;
         }
 
         public String getNombre() {
@@ -63,7 +78,7 @@ public class Usuario {
 
         public UsuarioPublico setNombre(String nombre) {
             this.nombre = nombre;
-            return UsuarioPublico.this;
+            return this;
         }
 
         public String getImagen() {
@@ -72,9 +87,58 @@ public class Usuario {
 
         public UsuarioPublico setImagen(String imagen) {
             this.imagen = imagen;
-            return UsuarioPublico.this;
+            return this;
         }
 
+    }
+
+    public static class Premium{
+        private String idUsuario;
+        private String fechaInicio;
+        private String fechaFin;
+        private String estado;
+
+
+        public String getIdUsuario() {
+            return idUsuario;
+        }
+
+        public Premium setIdUsuario(String idUsuario) {
+            this.idUsuario = idUsuario;
+            return this;
+        }
+
+
+        public String getFechaInicio() {
+            return fechaInicio;
+        }
+
+        public Premium setFechaInicio(String fechaInicio) {
+            this.fechaInicio = fechaInicio;
+            return this;
+        }
+
+        public String getFechaFin() {
+            return fechaFin;
+        }
+
+        public Premium setFechaFin(String fechaFin) {
+            this.fechaFin = fechaFin;
+            return Usuario.Premium.this;
+        }
+
+        public String getEstado() {
+            return estado;
+        }
+
+        public Premium setEstado(String estado) {
+            this.estado = estado;
+            return Usuario.Premium.this;
+        }
+
+        public boolean isExpired(){
+            return new Date().after(new SimpleDateFormat().parse(fechaInicio,new ParsePosition(0)));
+        }
     }
 
 }

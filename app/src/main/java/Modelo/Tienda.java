@@ -2,7 +2,6 @@ package Modelo;
 
 public class Tienda extends Marcadores {
 
-    private String direccion;
     private String idPublicidad;
     private String sitioWeb;
 
@@ -15,14 +14,7 @@ public class Tienda extends Marcadores {
         return this;
     }
 
-    public String getDireccion() {
-        return direccion;
-    }
 
-    public Marcadores setDireccion(String direccion) {
-        this.direccion = direccion;
-        return this;
-    }
 
     public String getSitioWeb() {
         return sitioWeb;

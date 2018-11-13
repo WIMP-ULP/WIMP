@@ -19,7 +19,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import finalClass.GeneralMethod;
 
 public class AdaptadorMascota extends RecyclerView.Adapter<AdaptadorMascota.ViewHolderMascotas>{
-    private View.OnClickListener listener;
     private ArrayList<Mascota>ListaMascota;
     private Context context;
 
@@ -27,7 +26,6 @@ public class AdaptadorMascota extends RecyclerView.Adapter<AdaptadorMascota.View
         this.ListaMascota = datos;
         this.context=context;
     }
-
 
     @NonNull
     @Override
@@ -41,37 +39,22 @@ public class AdaptadorMascota extends RecyclerView.Adapter<AdaptadorMascota.View
         holder.nombreFavorito.setText(ListaMascota.get(i).getNombre());
         holder.descripcionfavorito.setText(ListaMascota.get(i).getDescripcion());
         GeneralMethod.GlideUrl((Activity) context, ListaMascota.get(i).getImagen(),holder.imagenFavorito);
-
-
-
     }
 
 
-
     class ViewHolderMascotas extends RecyclerView.ViewHolder {
-
         private CircleImageView imagenFavorito;
         private TextView nombreFavorito;
         private TextView descripcionfavorito;
 
         ViewHolderMascotas(View itemView) {
-            super( itemView );
-
-
-
-            nombreFavorito=(TextView) itemView.findViewById(R.id.eNombreMascotaFavorito);
-            descripcionfavorito=(TextView) itemView.findViewById(R.id.eDescripcionMascotafavorito);
-            imagenFavorito=(CircleImageView) itemView.findViewById(R.id.imgMascotaFavorito);
-
-
-
+            super(itemView);
+            nombreFavorito = itemView.findViewById(R.id.eNombreMascotaFavorito);
+            descripcionfavorito = itemView.findViewById(R.id.eDescripcionMascotafavorito);
+            imagenFavorito = itemView.findViewById(R.id.imgMascotaFavorito);
         }
 
     }
-
-
-
-
 
     @Override
     public int getItemCount() {

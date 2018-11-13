@@ -16,6 +16,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -39,6 +41,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import actividades.MainActivity;
@@ -469,5 +473,20 @@ public final class GeneralMethod {
                 .into(mIntoImageView);
     }
 
-
+    public static String ObtenerDireccion(Double lat, Double lng,Activity mActivity) {
+        List<Address> direcciones = null;
+        Geocoder geocoder = new Geocoder(mActivity.getApplicationContext(), Locale.getDefault());
+        String address = null;
+        try {
+            direcciones = geocoder.getFromLocation(lat, lng, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert direcciones != null;
+        if (!direcciones.isEmpty()) {
+            Address DirCalle = direcciones.get(0);
+            address = DirCalle.getAddressLine(0);
+        }
+        return address;
+    }
 }

@@ -96,7 +96,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/eNombreMascota" />
 
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/RecViewComentario"
             android:layout_width="342dp"
@@ -107,7 +106,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/eDescripcionMascota"
             tools:ignore="MissingConstraints"
-            tools:listitem="@layout/item_list"></android.support.v7.widget.RecyclerView>
+            tools:listitem="@layout/item_list">
+
+        </android.support.v7.widget.RecyclerView>
 
         <ImageView
             android:id="@+id/imageView6"

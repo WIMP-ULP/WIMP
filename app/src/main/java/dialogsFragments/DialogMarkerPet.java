@@ -98,7 +98,9 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                     .setNombre(mNombreMascotaMarcador.getText().toString())
                     .setDescripcion(mDescripcionMascotaMarcador.getText().toString())
                     .setLatitud(String.valueOf(latLng.latitude))
-                    .setLongitud(String.valueOf(latLng.longitude));
+                    .setLongitud(String.valueOf(latLng.longitude))
+                    //.setTelefono(mTelefono.getText().toString())
+                    .setDireccion(GeneralMethod.ObtenerDireccion(latLng.latitude,latLng.longitude,this.getActivity()));
             RegistrarMarcadorDeMascota((Mascota) mMascota);
         });
         builder.setOnKeyListener((dialog, keyCode, event) -> {
