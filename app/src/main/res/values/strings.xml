@@ -59,6 +59,8 @@
 
     <string name="version_1_1">Version 1.1</string>
     <string name="descripcion">Descripcion</string>
+    <string name="telefono">Telefono</string>
+
 
 
 </resources>

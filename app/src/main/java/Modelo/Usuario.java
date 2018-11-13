@@ -8,19 +8,6 @@ public class Usuario {
 
     private String email;
     private String contraseña;
-    private String idUsuario;
-
-
-    public String getIdUsuario() {
-        return idUsuario;
-    }
-
-    public Usuario setIdUsuario(String idUsuario) {
-        this.idUsuario = idUsuario;
-        return this;
-    }
-
-
 
     public String getContraseña() {
         return contraseña;
@@ -41,13 +28,11 @@ public class Usuario {
     }
 
 
-
-
     public static class UsuarioPublico{
+        private String idUsuario;
         private String nombre;
         private String apellido;
         private String imagen;
-
         public String getApellido() {
             return apellido;
         }
@@ -73,6 +58,14 @@ public class Usuario {
         public UsuarioPublico setImagen(String imagen) {
             this.imagen = imagen;
             return UsuarioPublico.this;
+        }
+        public String getIdUsuario() {
+            return idUsuario;
+        }
+
+        public UsuarioPublico setIdUsuario(String idUsuario) {
+            this.idUsuario = idUsuario;
+            return  UsuarioPublico.this;
         }
 
     }

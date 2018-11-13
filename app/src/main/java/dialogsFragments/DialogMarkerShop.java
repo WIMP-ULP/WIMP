@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -35,6 +34,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.whereismypet.whereismypet.R;
 
@@ -46,20 +46,18 @@ import java.util.Objects;
 import Modelo.Marcadores;
 import Modelo.Tienda;
 import finalClass.GeneralMethod;
+import finalClass.Utils;
 
 
 @SuppressLint("ValidFragment")
 public class DialogMarkerShop extends DialogFragment implements View.OnClickListener {
-
-
     private LatLng mLatLng;
     private GoogleMap mGoogleMap;
     //Componentes
     private EditText mNombreTiendaMarcador,mDescripcionTiendaMarcador,mTelefonoTiendaMarcador,mDireccionTiendaMarcador;
     private ImageView mFotoTiendaMarcador;
-    //CODIGOS CAMARA
-    private static final int COD_SELECCIONA = 10;
-    private static final int COD_FOTO = 20;
+    //CAMARA
+
     private Uri mUriTiendaMarcador;
     private String tipoDeFoto = "VACIO";
     //Firebase
@@ -69,7 +67,6 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
 
     private ProgressDialog progressDialog;
 
-    private final String defautMarkerShop = "https://firebasestorage.googleapis.com/v0/b/wimp-219219.appspot.com/o/Imagenes%2FMarcadores%2FShop%2FdefaultShop.png?alt=media&token=ca7b5630-d219-489c-b0f5-a0a75daed0ac";
     public DialogMarkerShop(GoogleMap map, LatLng latLng) {
         this.mLatLng = latLng;
         this.mGoogleMap = map;
@@ -139,7 +136,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
-                case COD_SELECCIONA: {
+                case Utils.COD_SELECCIONA: {
                     // URI Camara
                     mUriTiendaMarcador = Objects.requireNonNull(data).getData();
                     tipoDeFoto = "SELECCIONA";
@@ -149,7 +146,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
                         e.printStackTrace();
                     }
                 }break;
-                case COD_FOTO: {
+                case Utils.COD_FOTO: {
                     MediaScannerConnection.scanFile(DialogMarkerShop.this.getActivity(), new String[]{pathCaptureShop}, null,(path, uri) -> Log.i("Path", "" + path));
                     mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeFile(pathCaptureShop)));
                     mUriTiendaMarcador = Uri.fromFile(new File(pathCaptureShop));
@@ -172,7 +169,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
                 if (opciones[i].equals("Elegir de Galeria")) {
                     Intent intent=new Intent(Intent.ACTION_PICK);
                     intent.setType("image/");
-                    startActivityForResult(Intent.createChooser(intent, "Seleccione"), COD_SELECCIONA);
+                    startActivityForResult(Intent.createChooser(intent, "Seleccione"), Utils.COD_SELECCIONA);
                 } else {
                     dialogInterface.dismiss();
                 }
@@ -182,7 +179,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
     }
 
     private void abriCamara() {
-        File miFile = new File(Environment.getExternalStorageDirectory(), GeneralMethod.getDirectorioImagen());
+        File miFile = new File(Environment.getExternalStorageDirectory(), Utils.DIRECTORIO_IMAGEN);
         boolean isCreada = miFile.exists();
 
         if (!isCreada) {
@@ -192,7 +189,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
             Long consecutivo = System.currentTimeMillis() / 1000;
             String nombre = consecutivo.toString() + ".jpg";
 
-            pathCaptureShop = Environment.getExternalStorageDirectory() + File.separator + GeneralMethod.getDirectorioImagen()
+            pathCaptureShop = Environment.getExternalStorageDirectory() + File.separator + Utils.DIRECTORIO_IMAGEN
                     + File.separator + nombre;//indicamos la ruta de almacenamiento
 
             File fileImagen = new File(pathCaptureShop);
@@ -208,19 +205,17 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
             } else {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagen));
             }
-            startActivityForResult(intent, COD_FOTO);
-
+            startActivityForResult(intent, Utils.COD_FOTO);
         }
-
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode==100){
-            if(grantResults.length==2 && grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED){//el dos representa los 2 permisos
+        if (requestCode == Utils.MIS_PERMISOS){
+            if(GeneralMethod.solicitaPermisosVersionesSuperiores(this.getActivity())){//el dos representa los 2 permisos
                 //GeneralMethod.showSnackback("Gracias por aceptar los permisos..!",mView,mActivity);
-                GeneralMethod.mostrarDialogOpciones(this.getActivity());
+                mostrarDialogOpciones();
             }
         }
 
@@ -241,7 +236,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         else{
 
             SubirRealtimeDatabase(currentUserDB,mTienda,mDatabase,mTienda.getIdMarcador());
-            mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Shop").child(mTienda.getIdMarcador()).child("imagen").setValue(defautMarkerShop);
+            mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Shop").child(mTienda.getIdMarcador()).child("imagen").setValue(Utils.mDefautMarkerShop);
         }
 
 
@@ -254,6 +249,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         progressDialog.dismiss();
     }
     private void storageIMG(final DatabaseReference currentUserDB, final Tienda mTienda, final DatabaseReference mDatabase, final String nombreAleatorio ){
+        mStorageReference = FirebaseStorage.getInstance().getReference();
         final StorageReference mStorageImgMarkerShop = mStorageReference.child("Imagenes").child("Marcadores").child("Shop").child(GeneralMethod.getRandomString());
         mStorageImgMarkerShop.putFile(mUriTiendaMarcador).addOnSuccessListener(this.getActivity(), taskSnapshot -> {
             SubirRealtimeDatabase(currentUserDB,mTienda,mDatabase,nombreAleatorio);
