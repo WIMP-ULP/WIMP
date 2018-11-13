@@ -167,18 +167,12 @@ contraseñaText=findViewById(R.id.textInputLayoutPassword);
         }
     }
 
-
-
     @Override
     protected void onResume() {
 
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-
-        //validarContraseña();
-        //validarEmail();
-
 
      //   ValidarLogin();
        // LimpiarEditText();
@@ -246,42 +240,6 @@ contraseñaText=findViewById(R.id.textInputLayoutPassword);
         mEmailEditTextLogin.setError(null);
         mPasswordEditTextLogin.setError(null);
     }
-
-
-    private void validarEmail() {
-
-
-        if (correoText.getEditText().getText().toString().trim().isEmpty())
-        {
-            correoText.setError("Campo Invalido");
-          //return false;
-        }
-        else
-            correoText.setError(null);
-       // correoText.setErrorEnabled(false);
-        //return true;
-
-
-    }
-    private void validarContraseña() {
-
-
-        if (contraseñaText.getEditText().getText().toString().trim().isEmpty())
-        {
-            contraseñaText.setError("Campo Invalido");
-          // return false;
-        }
-        else
-            contraseñaText.setError(null);
-        // correoText.setErrorEnabled(false);
-        // return true;
-
-
-    }
-
-
-
-
 
     private void ValidarLogin() {
     mEmailEditTextLogin.addTextChangedListener(new TextWatcher() {
@@ -361,10 +319,9 @@ contraseñaText=findViewById(R.id.textInputLayoutPassword);
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
+        new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
@@ -416,9 +373,7 @@ contraseñaText=findViewById(R.id.textInputLayoutPassword);
             }
 
             @Override
-            public void onCancel() {
-
-            }
+            public void onCancel() {}
 
             @Override
             public void onError(FacebookException error) {
