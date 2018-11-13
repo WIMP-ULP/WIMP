@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#000c5a</color>
-    <color name="colorAccent">#ced2238d</color>
+    <color name="colorAccent">#ced31f8c</color>
     <color name="colorVariante">#e5ffffff</color>
 
     <array name="reds">

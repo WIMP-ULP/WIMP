@@ -467,16 +467,7 @@ public final class GeneralMethod {
         Glide.with(mActivity)
                 .load(mLoadImage)
                 .into(mIntoImageView);
-
     }
-    public static void GlideUrlImagenCuadrada(Activity mActivity, String mLoadImage, ImageView mIntoImageView){
-        Glide.with(mActivity)
-                .load(mLoadImage)
-                .into(mIntoImageView);
-
-    }
-
-    //
 
 
 }

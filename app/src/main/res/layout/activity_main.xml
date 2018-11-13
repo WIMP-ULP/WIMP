@@ -26,7 +26,8 @@
         app:itemTextAppearance="@style/TextAppearance.AppCompat.Widget.DropDownItem"
         app:itemTextColor="@color/colorPrimaryDark"
         app:menu="@menu/activity_main_drawer">
-
+        <include
+            layout="@layout/nav_header_main"/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/floatingIsPremium"
             android:layout_width="wrap_content"
@@ -42,7 +43,7 @@
             app:backgroundTint="@android:color/transparent"
             app:fabSize="normal"
             app:layout_anchorGravity="fill_vertical|end"
-            app:srcCompat="@drawable/messenger_bubble_small_blue" />
+            app:srcCompat="@drawable/favoritos_menu_lateral" />
     </android.support.design.widget.NavigationView>
 
     <android.support.design.widget.FloatingActionButton

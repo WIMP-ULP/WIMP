@@ -10,11 +10,16 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imgMascotaFavorito"
-        android:layout_width="108dp"
-        android:layout_height="96dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+
         android:layout_marginStart="8dp"
+
+
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -37,10 +42,10 @@
             android:layout_height="25dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:textColor="#FFFFFF"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:text="Nombre"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/eDescripcionMascotafavorito"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -51,11 +56,10 @@
             android:id="@+id/eDescripcionMascotafavorito"
             android:layout_width="198dp"
             android:layout_height="50dp"
-            android:textColor="#FFFFFF"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:text="Descripcion.."
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

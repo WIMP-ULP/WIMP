@@ -13,6 +13,7 @@ import com.whereismypet.whereismypet.R;
 import java.util.ArrayList;
 
 import Modelo.Publicidad;
+import de.hdodenhof.circleimageview.CircleImageView;
 import finalClass.GeneralMethod;
 
 public class AdaptadorPublicidades extends RecyclerView.Adapter<AdaptadorPublicidades.ViewHolderPublicidades> implements View.OnClickListener{
@@ -39,7 +40,7 @@ public class AdaptadorPublicidades extends RecyclerView.Adapter<AdaptadorPublici
         holder.tvtitulo.setText( ListaPublicidades.get(pos).getTituloOferta() );
         holder.tvprecio.setText( ListaPublicidades.get(pos).getPrecio() );
         holder.tvdescripcion.setText( ListaPublicidades.get(pos).getDescripcionOferta() );
-        GeneralMethod.GlideUrlImagenCuadrada((Activity) context, ListaPublicidades.get(pos).getImgOferta(),holder.ivOferta);
+        GeneralMethod.GlideUrl((Activity) context, ListaPublicidades.get(pos).getImgOferta(),holder.ivOferta);
 
 
     }
@@ -51,14 +52,14 @@ public class AdaptadorPublicidades extends RecyclerView.Adapter<AdaptadorPublici
         private TextView tvtitulo;
         private TextView tvprecio;
         private TextView tvdescripcion;
-        private ImageView ivOferta;
+        private CircleImageView ivOferta;
         ViewHolderPublicidades(View itemView) {
             super( itemView );
 
-            tvtitulo=(TextView) itemView.findViewById( R.id.TvTituloTienda);
-            tvprecio=(TextView) itemView.findViewById( R.id.TvPrecioTienda );
-            tvdescripcion=(TextView) itemView.findViewById( R.id.TvDescripcionTienda );
-            ivOferta=(ImageView)itemView.findViewById( R.id.IvOfertaTienda );
+            tvtitulo=itemView.findViewById( R.id.TvTituloTienda);
+            tvprecio= itemView.findViewById( R.id.TvPrecioTienda );
+            tvdescripcion=itemView.findViewById( R.id.TvDescripcionTienda );
+            ivOferta= itemView.findViewById( R.id.IvOfertaTienda );
         }
 
     }

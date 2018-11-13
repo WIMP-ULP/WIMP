@@ -34,10 +34,10 @@
             android:layout_marginBottom="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/RecViewComentario"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="0.0" />
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="wrap_content"
@@ -51,7 +51,7 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imgFotomascota"
-                android:layout_width="99dp"
+                android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/imagenmarcador"
@@ -107,8 +107,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/eDescripcionMascota"
             tools:ignore="MissingConstraints"
-            tools:listitem="@layout/item_list">
-        </android.support.v7.widget.RecyclerView>
+            tools:listitem="@layout/item_list"></android.support.v7.widget.RecyclerView>
 
         <ImageView
             android:id="@+id/imageView6"
@@ -120,6 +119,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/icono_corazon_sinreleno"
+            tools:ignore="MissingConstraints" />
+
+        <ImageView
+            android:id="@+id/imgSinCompentarios"
+            android:layout_width="342dp"
+            android:layout_height="342dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="30dp"
+            android:contentDescription="Favorito"
+            app:layout_constraintBottom_toBottomOf="@+id/RecViewComentario"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/RecViewComentario"
+            app:srcCompat="@drawable/ic_sincomentarios"
             tools:ignore="MissingConstraints" />
 
     </android.support.constraint.ConstraintLayout>

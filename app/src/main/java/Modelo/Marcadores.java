@@ -2,6 +2,7 @@ package Modelo;
 
 public class Marcadores {
     private String idMarcador;
+    private String idUsuario;
     private String nombre;
     private String descripcion;
     private String imagen;
@@ -9,13 +10,10 @@ public class Marcadores {
     private String longitud;
     private String telefono;
 
-
+    public String getIdUsuario() { return idUsuario; }
+    public Marcadores setIdUsuario(String idUsuario) { this.idUsuario = idUsuario;return this; }
     public String getTelefono() { return telefono; }
-
-    public Marcadores setTelefono(String telefono) { this.telefono = telefono;
-        return this;
-    }
-
+    public Marcadores setTelefono(String telefono) { this.telefono = telefono;return this; }
     public Marcadores setNombre(String nombre) { this.nombre = nombre; return this;}
     public Marcadores setDescripcion(String descripcion) { this.descripcion = descripcion; return this;}
     public Marcadores setLatitud(String posicion) { this.latitud = posicion; return this;}
@@ -24,12 +22,7 @@ public class Marcadores {
     public String getIdMarcador() {
         return idMarcador;
     }
-
-    public Marcadores setIdMarcador(String idMarcador) {
-        this.idMarcador = idMarcador;
-        return this;
-    }
-
+    public Marcadores setIdMarcador(String idMarcador) { this.idMarcador = idMarcador;return this; }
     public String getNombre() {
         return nombre;
     }

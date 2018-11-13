@@ -19,25 +19,19 @@ import Modelo.PreferenciasLogin;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseUser mUserFireBase;
-    SharedPreferences sharedPreferences;
-
-
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         RelativeLayout Splash = findViewById(R.id.Splash);
-        //crearAccesoDirectoAlInstalar(this);
 
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mUserFireBase = mFirebaseAuth.getCurrentUser();
+        FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser mUserFireBase = mFirebaseAuth.getCurrentUser();
 
-        boolean chek = LecturaDeTipoLogin().isRecordarUsuario();
 
         Animation animationSplash = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.transition);
         Splash.startAnimation(animationSplash);
@@ -45,28 +39,20 @@ public class SplashScreenActivity extends AppCompatActivity {
         final Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Pref(chek);
-               // SplashScreenActivity.this.startActivity(new Intent(SplashScreenActivity.this,LoginActivity.class));
-                // SplashScreenActivity.this.finish();
-            }
-        },2500);
+        // SplashScreenActivity.this.startActivity(new Intent(SplashScreenActivity.this,LoginActivity.class));
+// SplashScreenActivity.this.finish();
+        new Handler().postDelayed(this::ModoDeInicio,2500);
 
-
-
-
-        crearAccesoDirectoEnEscritorio("WIMP?");
+        //crearAccesoDirectoEnEscritorio("WIMP?");
     }
     private PreferenciasLogin LecturaDeTipoLogin(){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        return new PreferenciasLogin().setTipoSignOut(sharedPreferences.getString("type_sign_out", "default"))
-                .setRecordarUsuario(sharedPreferences.getBoolean("remember", true))
-                .setTipoSignIn(sharedPreferences.getString("type_sign_in", "default"));}
+        return new PreferenciasLogin().setTipoSignOut(mSharedPreferences.getString("type_sign_out", "default"))
+                .setRecordarUsuario(mSharedPreferences.getBoolean("remember", true))
+                .setTipoSignIn(mSharedPreferences.getString("type_sign_in", "default"));}
 
-    private void Pref(boolean t){
-        String res = String.valueOf(t);
+
+    private void ModoDeInicio(){
+        String res = String.valueOf(LecturaDeTipoLogin().isRecordarUsuario());
         switch (LecturaDeTipoLogin().getTipoSignIn())
         {
             case "password":
@@ -93,6 +79,15 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
+
+    private void ModoDeInicio1(){
+        if(!LecturaDeTipoLogin().getTipoSignIn().equals("password"))
+            InicioSesion();
+        else if(LecturaDeTipoLogin().isRecordarUsuario())
+            InicioSesion();
+        else
+            Loguearse();
+    }
     private void InicioSesion() {
         Intent i = new Intent(this, MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -100,15 +95,26 @@ public class SplashScreenActivity extends AppCompatActivity {
         startActivity(i);
         finish();
     }
-    private void Loguearse()
-    {
+    private void Loguearse() {
         SplashScreenActivity.this.startActivity(new Intent(SplashScreenActivity.this,LoginActivity.class));
         SplashScreenActivity.this.finish();
     }
 
 
     //----------------------------------------ACCESO DIRECTO---------------------------------------------------------
-     private void crearAccesoDirectoEnEscritorio(String nombre) {
+  /*   public void crearAccesoDirectoAlInstalar() {
+        //BOOLEAN SHORTCUT
+        if(!mSharedPreferences.getBoolean("ShortcutInstall", false)) {
+            SharedPreferences.Editor mEditorSplash = mSharedPreferences.edit();
+            this.sendBroadcast(new Intent()
+                    .putExtra(Intent.EXTRA_SHORTCUT_NAME, "WIMP?")
+                    .putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,Intent.ShortcutIconResource.fromContext(this, R.drawable.icon_app)));
+            mEditorSplash.putBoolean("ShortcutInstall", true);
+            mEditorSplash.apply();
+        }
+    }
+
+    private void crearAccesoDirectoEnEscritorio(String nombre) {
         Intent shortcutIntent = new Intent();
         shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, getIntentShortcut());
         shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, nombre);
@@ -127,7 +133,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
 
-/*
+
     public void crearAccesoDirectoAlInstalar(Activity actividad)
     {
         SharedPreferences preferenciasapp;
