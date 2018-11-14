@@ -607,14 +607,12 @@ public final class GeneralMethod {
 
     public static String ObtenerDireccion(Double lat, Double lng,Activity mActivity) {
         List<Address> direcciones = null;
-        Geocoder geocoder = new Geocoder(mActivity.getApplicationContext(), Locale.getDefault());
         String address = null;
         try {
-            direcciones = geocoder.getFromLocation(lat, lng, 1);
+            direcciones = new Geocoder(mActivity.getApplicationContext(), Locale.getDefault()).getFromLocation(lat, lng, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assert direcciones != null;
         if (!direcciones.isEmpty()) {
             Address DirCalle = direcciones.get(0);
             address = DirCalle.getAddressLine(0);

@@ -53,10 +53,9 @@ import finalClass.Utils;
 public class DialogMarkerPet extends DialogFragment implements View.OnClickListener{
 
     ///MASCOTA
-    private EditText mNombreMascota,mTelefonoMascota,mDescripcionMascota;
     private boolean RespuestaValidacion = false;
     //Componentes
-    private EditText mNombreMascotaMarcador,mDescripcionMascotaMarcador;
+    private EditText mNombreMascotaMarcador,mDescripcionMascotaMarcador,mTelefonoMascotaMarcador;
     private CircleImageView mFotoMascotaMarcador;
     private String tipoDeFoto = "VACIO";
     //Firebase
@@ -87,15 +86,13 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         View content = inflater.inflate(R.layout.dialog_pets, null);
         mNombreMascotaMarcador = content.findViewById(R.id.input_nombre);
         mDescripcionMascotaMarcador = content.findViewById(R.id.input_descripcion);
+        mTelefonoMascotaMarcador=content.findViewById(R.id.input_telefono);
         mFotoMascotaMarcador = content.findViewById(R.id.imgMascota);
         mFotoMascotaMarcador.setOnClickListener(this);
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mFirebaseAuth = FirebaseAuth.getInstance();
 
-        //intancio MAscota para validar
-        mNombreMascota=content.findViewById(R.id.input_nombre);
-        mDescripcionMascota=content.findViewById(R.id.input_descripcion);
-        mTelefonoMascota=content.findViewById(R.id.input_telefono);
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
         builder.setPositiveButton("GUARDAR", (dialog, id) -> {
@@ -106,10 +103,10 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                     .setDescripcion(mDescripcionMascotaMarcador.getText().toString())
                     .setLatitud(String.valueOf(latLng.latitude))
                     .setLongitud(String.valueOf(latLng.longitude))
-                    //.setTelefono(mTelefono.getText().toString())
-                    .setDireccion(GeneralMethod.ObtenerDireccion(latLng.latitude,latLng.longitude,this.getActivity()));
+                    .setTelefono(mTelefonoMascotaMarcador.getText().toString())
+                    .setLongitud(String.valueOf(latLng.longitude))
+                    .setDireccion(/*GeneralMethod.ObtenerDireccion(latLng.latitude,latLng.longitude,this.getActivity())*/"DIRECCION DE MIERDA");
             RegistrarMarcadorDeMascota((Mascota) mMascota);
-                    .setLongitud(String.valueOf(latLng.longitude));
             if(ValidarCargaDeMascota(content)){
             RegistrarMarcadorDeMascota((Mascota) mMascota);}
         });
@@ -267,11 +264,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
     }
 
     private Boolean ValidarCargaDeMascota(View view) {
-
-
-
-
-        mNombreMascota.addTextChangedListener(new TextWatcher() {
+        mNombreMascotaMarcador.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -283,10 +276,9 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
             @Override
             public void afterTextChanged(Editable s) {
                 RespuestaValidacion=   GeneralMethod.RegexCargarMascota("nombre",view);
-
             }
         });
-        mDescripcionMascota.addTextChangedListener(new TextWatcher() {
+        mDescripcionMascotaMarcador.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -300,7 +292,8 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                 RespuestaValidacion=   GeneralMethod.RegexCargarMascota("descripcion", view);
             }
         });
-        mTelefonoMascota.addTextChangedListener(new TextWatcher() {
+        mTelefonoMascotaMarcador
+                .addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
