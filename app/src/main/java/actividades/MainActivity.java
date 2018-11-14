@@ -37,6 +37,8 @@ import android.support.v7.app.AppCompatCallback;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -150,7 +152,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private SharedPreferences sharedPreferences;
     private ArrayList<Mascota> listaMarcador;
     static final int PETICION_PERMISO_LOCALIZACION = 0;
-    //FIREBASE
+
+    ///PUBLCIDAD
+    private EditText mTituloPulicidad,mDescripcionPublicidad,mPrecioPublicidad;
+
+
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mUserFireBase;
     private DatabaseReference mDatabase;
@@ -1340,7 +1346,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         dialog.setCancelable(false);
         dialog.show(getFragmentManager(), "MASCOTA");// Mostramos el dialogo
     }
-
 
 
 

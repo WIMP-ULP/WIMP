@@ -223,42 +223,193 @@ public final class GeneralMethod {
 
 
 
-  /*  public static boolean CargarMascota(String edit, Activity activity) {
-        boolean respuestaValidacion = false;
-        Drawable msgerror = activity.getResources().getDrawable(R.drawable.icon_error);
-        msgerror.setBounds(20, 0, msgerror.getIntrinsicWidth(), msgerror.getIntrinsicHeight());
-        final EditText etNombre = activity.findViewById(R.id.CorreoLogin),
-                etDescripcion = activity.findViewById(R.id.PasswordLogin);
-        switch (edit) {
-            case "correo": {
-                if (CheckEditTextIsEmptyOrNot(etCorreoLogin)) {
-                    etCorreoLogin.setError("Campo Vacio", msgerror);
-                } else {
-                    Pattern p = Pattern.compile(Utils.REGEX_EMAIL);
-                    if (!p.matcher(etCorreoLogin.getText().toString()).matches()) {
-                        etCorreoLogin.setError("Correo Invalido", msgerror);
-                    } else {
-                        etCorreoLogin.setError(null);
-                        respuestaValidacion = true;
-                    }
-                }
-            }
-            break;
 
-            case "contrasenavacio": {
-                if (CheckEditTextIsEmptyOrNot(etContrasenaLogin)) {
-                    etContrasenaLogin.setError("Campo Vacio", msgerror);
+
+    public static boolean RegexCargarTienda(String edit, View view) {
+        boolean respuestaValidacion = false;
+        Drawable msgerror = view.getResources().getDrawable(R.drawable.icon_error);
+        msgerror.setBounds(0, 0, msgerror.getIntrinsicWidth(), msgerror.getIntrinsicHeight());
+
+        final EditText etNombreTienda = view.findViewById(R.id.input_nombreShop),
+                etDescripcionTienda= view.findViewById(R.id.input_descripcionShop),
+                etTelefonoTienda =view.findViewById(R.id.input_telefonoShop),
+                eDireccionTienda=view.findViewById(R.id.input_direccionShop);
+
+        switch (edit) {
+            case "nombre": {
+                if (CheckEditTextIsEmptyOrNot(etNombreTienda)) {
+                    etNombreTienda.setError("Campo Vacio", msgerror);
                 } else {
-                    if (!Pattern.compile(Utils.REGEX_PASSWORD).matcher(etContrasenaLogin.getText().toString()).matches()) {
-                        etContrasenaLogin.setError("Recuerde que su contraseña contiene al menos 8 caracteres alfanumericos, " +
-                                "1 minuscula, 1 mayuscula, 1 numero", msgerror);
+                    Pattern p = Pattern.compile(Utils.REGEX_LETRAS);
+                    if (!p.matcher(etNombreTienda.getText().toString()).matches()) {
+                        etNombreTienda.setError("Este campo permite solo letras,", msgerror);
                     } else {
-                        etContrasenaLogin.setError(null);
+                        etNombreTienda.setError(null);
                         respuestaValidacion = true;
                     }
                 }
             }
             break;
+            case "descripcion": {
+                if (CheckEditTextIsEmptyOrNot(etDescripcionTienda)) {
+                    etDescripcionTienda.setError("Campo Vacio", msgerror);
+                } else {
+                    Pattern p = Pattern.compile(Utils.REGEX_LETRAS);
+                    if (!p.matcher(etDescripcionTienda.getText().toString()).matches()) {
+                        etDescripcionTienda.setError("Este campo permite solo letras", msgerror);
+                    } else {
+                        etDescripcionTienda.setError(null);
+                        respuestaValidacion = true;
+                    }
+                }
+
+            }
+            break;
+            case "direccion": {
+                if (CheckEditTextIsEmptyOrNot(eDireccionTienda)) {
+                    eDireccionTienda.setError("Campo Vacio", msgerror);
+                } else {
+                    if (!Pattern.compile(Utils.Regex_LetrasNumeros).matcher(eDireccionTienda.getText().toString()).matches()) {
+                        eDireccionTienda.setError("Este campo permite Permite letras y numeros", msgerror);
+                    } else {
+                        eDireccionTienda.setError(null);
+                        respuestaValidacion = true;
+                    }
+                }
+            }break;
+            case "telefono": {
+                if (CheckEditTextIsEmptyOrNot(etTelefonoTienda)) {
+                    etTelefonoTienda.setError("Campo Vacio", msgerror);
+                } else {
+                    if (!Pattern.compile(Utils.Regex_Numeros).matcher(etTelefonoTienda.getText().toString()).matches()) {
+                        etTelefonoTienda.setError("Este campo permite solo numeros", msgerror);
+                    } else {
+                        etTelefonoTienda.setError(null);
+                        respuestaValidacion = true;
+                    }
+                }
+            }break;
+
+
+
+        }
+        return respuestaValidacion;
+    }
+
+    public static boolean RegexCargarMascota(String edit, View view) {
+        boolean respuestaValidacion = false;
+        Drawable msgerror = view.getResources().getDrawable(R.drawable.icon_error);
+        msgerror.setBounds(0, 0, msgerror.getIntrinsicWidth(), msgerror.getIntrinsicHeight());
+
+        final EditText etNombreMascota = view.findViewById(R.id.input_nombre),
+                etDescripcionMascota= view.findViewById(R.id.input_descripcion),
+                etTelefonoMascota =view.findViewById(R.id.input_telefono);
+
+
+        switch (edit) {
+            case "nombre": {
+                if (CheckEditTextIsEmptyOrNot(etNombreMascota)) {
+                    etNombreMascota.setError("Campo Vacio", msgerror);
+                } else {
+                    Pattern p = Pattern.compile(Utils.REGEX_LETRAS);
+                    if (!p.matcher(etNombreMascota.getText().toString()).matches()) {
+                        etNombreMascota.setError("Este campo permite solo letras,", msgerror);
+                    } else {
+                        etNombreMascota.setError(null);
+                        respuestaValidacion = true;
+                    }
+                }
+            }break;
+            case "descripcion": {
+                if (CheckEditTextIsEmptyOrNot(etDescripcionMascota)) {
+                    etDescripcionMascota.setError("Campo Vacio", msgerror);
+                } else {
+                    Pattern p = Pattern.compile(Utils.REGEX_LETRAS);
+                    if (!p.matcher(etDescripcionMascota.getText().toString()).matches()) {
+                        etDescripcionMascota.setError("Este campo permite solo letras", msgerror);
+                    } else {
+                        etDescripcionMascota.setError(null);
+                        respuestaValidacion = true;
+                    }
+                }
+
+            }break;
+
+            case "telefono": {
+                if (CheckEditTextIsEmptyOrNot(etTelefonoMascota)) {
+                    etTelefonoMascota.setError("Campo Vacio", msgerror);
+                } else {
+                    if (!Pattern.compile(Utils.Regex_Numeros).matcher(etTelefonoMascota.getText().toString()).matches()) {
+                        etTelefonoMascota.setError("Este campo permite solo numeros", msgerror);
+                    } else {
+                        etTelefonoMascota.setError(null);
+                        respuestaValidacion = true;
+                    }
+                }
+            }break;
+
+
+
+        }
+        return respuestaValidacion;
+    }
+
+    public static boolean RegexCargarPublicidad(String edit, View view) {
+        boolean respuestaValidacion = false;
+        Drawable msgerror = view.getResources().getDrawable(R.drawable.icon_error);
+        msgerror.setBounds(0, 0, msgerror.getIntrinsicWidth(), msgerror.getIntrinsicHeight());
+
+        final EditText etTituloPubli= view.findViewById(R.id.Titulo_publi),
+                etDescripcionPubli= view.findViewById(R.id.Descripcion_publi),
+                etPrecioPubli =view.findViewById(R.id.Precio_publi);
+
+
+        switch (edit) {
+            case "titulo": {
+                if (CheckEditTextIsEmptyOrNot(etTituloPubli)) {
+                    etTituloPubli.setError("Campo Vacio", msgerror);
+                } else {
+                    Pattern p = Pattern.compile(Utils.REGEX_LETRAS);
+                    if (!p.matcher(etTituloPubli.getText().toString()).matches()) {
+                        etTituloPubli.setError("Este campo permite solo letras,", msgerror);
+                    } else {
+                        etTituloPubli.setError(null);
+                        respuestaValidacion = true;
+                    }
+                }
+            }break;
+            case "descripcion": {
+                if (CheckEditTextIsEmptyOrNot(etDescripcionPubli)) {
+                    etDescripcionPubli.setError("Campo Vacio", msgerror);
+                } else {
+                    Pattern p = Pattern.compile(Utils.REGEX_LETRAS);
+                    if (!p.matcher(etDescripcionPubli.getText().toString()).matches()) {
+                        etDescripcionPubli.setError("Este campo permite solo letras,", msgerror);
+                    } else {
+                        etDescripcionPubli.setError(null);
+                        respuestaValidacion = true;
+                    }
+                }
+            }
+            break;
+            case "precio": {
+                if (CheckEditTextIsEmptyOrNot(etPrecioPubli)) {
+                    etPrecioPubli.setError("Campo Vacio", msgerror);
+                } else {
+                    Pattern p = Pattern.compile(Utils.Regex_Numeros);
+                    if (!p.matcher(etPrecioPubli.getText().toString()).matches()) {
+                        etPrecioPubli.setError("Este campo permite solo numeros", msgerror);
+                    } else {
+                        etPrecioPubli.setError(null);
+                        respuestaValidacion = true;
+                    }
+                }
+
+            }break;
+
+
+
+
         }
         return respuestaValidacion;
     }
@@ -266,7 +417,11 @@ public final class GeneralMethod {
 
 
 
-*/
+
+
+
+
+
 
 
 

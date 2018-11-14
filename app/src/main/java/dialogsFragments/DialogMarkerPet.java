@@ -19,6 +19,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,6 +51,10 @@ import finalClass.Utils;
 
 @SuppressLint("ValidFragment")
 public class DialogMarkerPet extends DialogFragment implements View.OnClickListener{
+
+    ///MASCOTA
+    private EditText mNombreMascota,mTelefonoMascota,mDescripcionMascota;
+    private boolean RespuestaValidacion = false;
     //Componentes
     private EditText mNombreMascotaMarcador,mDescripcionMascotaMarcador;
     private CircleImageView mFotoMascotaMarcador;
@@ -85,6 +91,11 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         mFotoMascotaMarcador.setOnClickListener(this);
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mFirebaseAuth = FirebaseAuth.getInstance();
+
+        //intancio MAscota para validar
+        mNombreMascota=content.findViewById(R.id.input_nombre);
+        mDescripcionMascota=content.findViewById(R.id.input_descripcion);
+        mTelefonoMascota=content.findViewById(R.id.input_telefono);
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
         builder.setPositiveButton("GUARDAR", (dialog, id) -> {
@@ -94,7 +105,8 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                     .setDescripcion(mDescripcionMascotaMarcador.getText().toString())
                     .setLatitud(String.valueOf(latLng.latitude))
                     .setLongitud(String.valueOf(latLng.longitude));
-            RegistrarMarcadorDeMascota((Mascota) mMascota);
+            if(ValidarCargaDeMascota(content)){
+            RegistrarMarcadorDeMascota((Mascota) mMascota);}
         });
         builder.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -102,6 +114,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
             }
             return false;
         });
+
         return builder.create();
     }
 
@@ -124,7 +137,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
             }break;
         }
     }
-    private void RegistrarMarcadorDeMascota(Mascota mMascota){
+    private void RegistrarMarcadorDeMascota(Mascota mMascota) {
         progressDialog = new ProgressDialog(this.getActivity());
         progressDialog.setMessage("Registrando mascota perdida...");
         progressDialog.show();
@@ -132,15 +145,15 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference currentUserDB = mDatabase.child(Objects.requireNonNull(mFirebaseAuth.getCurrentUser()).getUid());
 
-        if(!tipoDeFoto.equals("VACIO")) {
-            storageIMG(currentUserDB,mMascota,mDatabase);
+            if (!tipoDeFoto.equals("VACIO")) {
+                storageIMG(currentUserDB, mMascota, mDatabase);
 
-        }
-        else{
-            mMascota.setImagen(Utils.mDefaultPet);
-            SubirRealtimeDatabase(currentUserDB,mMascota,mDatabase);
-        }
+            } else {
+                mMascota.setImagen(Utils.mDefaultPet);
+                SubirRealtimeDatabase(currentUserDB, mMascota, mDatabase);
+            }
     }
+
 
     private void SubirRealtimeDatabase(final DatabaseReference currentUserDB, final Mascota mMascota, final DatabaseReference mDatabase){
         mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Pet").child(mMascota.getIdMarcador()).setValue(mMascota);
@@ -247,5 +260,61 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
             }
         }
     }
+
+    private Boolean ValidarCargaDeMascota(View view) {
+
+
+
+
+        mNombreMascota.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion=   GeneralMethod.RegexCargarMascota("nombre",view);
+
+            }
+        });
+        mDescripcionMascota.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion=   GeneralMethod.RegexCargarMascota("descripcion", view);
+            }
+        });
+        mTelefonoMascota.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion=  GeneralMethod.RegexCargarMascota("telefono", view);
+            }
+        });
+        return RespuestaValidacion;
+    }
+
+
+
+
+
 
 }

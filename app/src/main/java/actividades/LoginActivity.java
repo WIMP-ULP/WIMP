@@ -94,6 +94,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String tipoDeLogin;
     private ConstraintLayout mContainerLogin;
     private CheckBox mRecordarUsuarioCheckBox;
+
+
+
+
+
+
     //FIREBASE-----
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
