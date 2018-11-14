@@ -49,6 +49,7 @@ public class Usuario {
         private String nombre;
         private String apellido;
         private String imagen;
+        private String idUsuario;
 
         public String getApellido() {
             return apellido;
@@ -60,7 +61,7 @@ public class Usuario {
         }
 
         public String getNombre() {
-            return nombre;
+            return this.nombre;
         }
 
         public UsuarioPublico setNombre(String nombre) {
@@ -69,7 +70,7 @@ public class Usuario {
         }
 
         public String getImagen() {
-            return imagen;
+            return this.imagen;
         }
 
         public UsuarioPublico setImagen(String imagen) {
@@ -77,6 +78,14 @@ public class Usuario {
             return this;
         }
 
+        public String getIdUsuario() {
+            return idUsuario;
+        }
+
+        public UsuarioPublico setIdUsuario(String idUsuario) {
+            this.idUsuario = idUsuario;
+            return this;
+        }
     }
 
     public static class Premium{
