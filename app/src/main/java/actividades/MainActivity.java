@@ -46,6 +46,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -59,7 +61,6 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import com.bumptech.glide.util.Util;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -146,8 +147,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     AlertDialog alertGPS = null;
     Location Localizacion;
     DrawerLayout drawer;
-    CircleImageView mImgFotoPerfil, imgPetsMarker;
-    private static final String URL_MARCADORES = "http://www.secsanluis.com.ar/servicios/varios/wimp/W_ListarMarcadores.php";
+    CircleImageView mImgFotoPerfil;
     static final String TAG = MainActivity.class.getSimpleName();
     private SharedPreferences sharedPreferences;
     private ArrayList<Mascota> listaMarcador;
@@ -171,11 +171,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private ArrayList<Mascota>ListaMarcadoresMacota;
     private ArrayList<Tienda>ListaMarcadoresTienda;
-    private ArrayList<Comentario>ListaComentario;
     private ArrayList<Publicidad>ListaPublicidad;
 
    //private ArrayList<Mascota>ListaMascotaSiguiendo;
-    RecyclerView recyclerComentarios;
+
     RecyclerView recyclerPublicidad;
     RecyclerView recyclerFavoritos;
 
@@ -184,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private boolean fabExpanded = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -341,22 +341,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUserPublic = dataSnapshot.getValue(Usuario.UsuarioPublico.class);
-                assert mUserPublic != null;
-
-                if (mUserFireBase.getProviderData().get(1).getProviderId().equals("password")){
+                if (mUserFireBase.getProviderData().get(1).getProviderId().equals("password"))
                     GeneralMethod.GlideUrl(MainActivity.this,mUserPublic.getImagen(),mImgFotoPerfil);
-                }
-                else {
+                else
                     GeneralMethod.GlideUrl(MainActivity.this,Objects.requireNonNull(mUserFireBase.getPhotoUrl()).toString(),mImgFotoPerfil);
-                }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
 
+    }
+
+    private String getImageUrlUser(){
+        if (mUserFireBase.getProviderData().get(1).getProviderId().equals("password")){
+            return mUserPublic.getImagen();
+        }
+        else {
+           return Objects.requireNonNull(mUserFireBase.getPhotoUrl()).toString();
+        }
     }
     //----------------------------LocationListener----------------------------------
     @Override
@@ -460,7 +463,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ListaMarcadoresTienda = new ArrayList<>();
         mListaMarcadoresMascotas = new HashMap<>();
         mListaMarcadoresTiendas = new HashMap<>();
-        ListaComentario = new ArrayList<>();
         ListaPublicidad=new ArrayList<>();
         mDatabase.child("Usuarios").addValueEventListener(new ValueEventListener() {
 
@@ -475,12 +477,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             marker = (HashMap<String, Object>) dt.getValue();
                             if (marker != null) {
                                 ListaMarcadoresMacota.add((Mascota) new Mascota()
+                                        .setIdUsuario(Objects.requireNonNull(marker.get("idUsuario")).toString())
                                         .setIdMarcador(Objects.requireNonNull(marker.get("idMarcador")).toString())
                                         .setNombre(Objects.requireNonNull(marker.get("nombre")).toString())
                                         .setDescripcion(Objects.requireNonNull(marker.get("descripcion")).toString())
                                         .setImagen(Objects.requireNonNull(marker.get("imagen")).toString())
                                         .setLatitud(Objects.requireNonNull(marker.get("latitud")).toString())
-                                        .setLongitud(Objects.requireNonNull(marker.get("longitud")).toString()));
+                                        .setLongitud(Objects.requireNonNull(marker.get("longitud")).toString())
+                                        .setTelefono(Objects.requireNonNull(marker.get("telefono")).toString())
+                                        .setDireccion(Objects.requireNonNull(marker.get("direccion")).toString()));
                             }
                         }
                     if (keyUserPet != null) {
@@ -496,18 +501,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         marker = (HashMap<String, Object>) dt.getValue();
                         if (marker != null) {
                             ListaMarcadoresTienda.add((Tienda) new Tienda()
-                                    .setIdPublicidad(Objects.requireNonNull(marker.get("idPublicidad")).toString())
-                                    .setDireccion(Objects.requireNonNull(marker.get("direccion")).toString())
+                                    .setIdPublicidad(Objects.requireNonNull(marker.get("idPublicidad")).toString()).setIdUsuario(Objects.requireNonNull(marker.get("idUsuario")).toString())
+                                    .setIdUsuario(Objects.requireNonNull(marker.get("idUsuario")).toString())
                                     .setIdMarcador(Objects.requireNonNull(marker.get("idMarcador")).toString())
                                     .setNombre(Objects.requireNonNull(marker.get("nombre")).toString())
                                     .setDescripcion(Objects.requireNonNull(marker.get("descripcion")).toString())
                                     .setTelefono(Objects.requireNonNull(marker.get("telefono")).toString())
                                     .setImagen(Objects.requireNonNull(marker.get("imagen")).toString())
                                     .setLatitud(Objects.requireNonNull(marker.get("latitud")).toString())
-                                    .setLongitud(Objects.requireNonNull(marker.get("longitud")).toString()));
+                                    .setLongitud(Objects.requireNonNull(marker.get("longitud")).toString())
+                                    .setTelefono(Objects.requireNonNull(marker.get("telefono")).toString())
+                                    .setDireccion(Objects.requireNonNull(marker.get("direccion")).toString()));
                         }
                     }
-
                     if (keyUserShop != null) {
                         mListaMarcadoresTiendas.put(keyUserShop, ListaMarcadoresTienda);
                     }
@@ -580,7 +586,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private String LoadStyle(){
-
         return sharedPreferences.getString("estilo_mapa", "default");
     }
 
@@ -788,11 +793,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             fondoVintage = content.findViewById(R.id.btVintage);
             fondoVintage.setOnClickListener(this);
             imagen1=content.findViewById(R.id.checkmapa1);
-                    imagen2=content.findViewById(R.id.checkmapa2);
-                    imagen3=content.findViewById(R.id.checkmapa3);
-                    imagen4=content.findViewById(R.id.checkmapa4);
-                    swgoogle=content.findViewById(R.id.swEstiloGoogle);
-                    swgoogle.setOnClickListener(this);
+            imagen2=content.findViewById(R.id.checkmapa2);
+            imagen3=content.findViewById(R.id.checkmapa3);
+            imagen4=content.findViewById(R.id.checkmapa4);
+            swgoogle=content.findViewById(R.id.swEstiloGoogle);
+            swgoogle.setOnClickListener(this);
 
     //////----- PREFERECIAS------ MAPA SELECCIONADO----- CON UN SWICH Y LOADSTYLE
             if(!LoadStyle().equals("default")) {
@@ -952,6 +957,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             builder.setView(content);
             builder.setOnKeyListener((dialog, keyCode, event) -> {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    ListaMisMascotas.clear();
                     dismiss();
                 }
                 return false;
@@ -964,25 +970,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Marcadores").child("Pet").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.i("Pet", dataSnapshot.toString());
-
                     for(DataSnapshot d:dataSnapshot.getChildren()){
-
                         Mascota mMascota = d.getValue(Mascota.class);
                         ListaMisMascotas.add(mMascota);
-
                     }
-
                     recyclerFavoritos = view.findViewById(R.id.RecViewFavoritos);
                     recyclerFavoritos.setLayoutManager(new LinearLayoutManager(view.getContext()));
                     AdaptadorMascota adapter = new AdaptadorMascota(ListaMisMascotas,view.getContext());
                     recyclerFavoritos.setAdapter(adapter);
-
                 }
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
         }
 
@@ -993,11 +991,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     //cuando llames al boton de fb, deves ahcer lo mismo pero asigandole a listaFavorito y setear el campo del dialogo  que dice mis mascotas,  a mis favoritos...
 
 
-
-
-
-
-
     private void instaciarMisMascotas() {
         MisMascotasDialog dialog = new MisMascotasDialog();  //Instanciamos la clase con el dialogo
         dialog.setCancelable(false);
@@ -1005,23 +998,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public String ObtenerDireccion(Double lat, Double lng) {
-        List<Address> direcciones = null;
-        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        String address = null;
-        try {
-            direcciones = geocoder.getFromLocation(lat, lng, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert direcciones != null;
-        if (!direcciones.isEmpty()) {
-            Address DirCalle = direcciones.get(0);
-            address = DirCalle.getAddressLine(0);
-        }
-        return address;
-    }
+
 
     // ------------------------ DIALOG MIS TERMINOS-----------------------------------------
     @SuppressLint("ValidFragment")
@@ -1106,9 +1083,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
 
-     public  void ConsultarPremium(final String urlws){
+     public  void ConsultarPremium(final String urlWebService){
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlws, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlWebService, null,
                 response -> {
                     try {
                         String IdPremium = GeneralMethod.getRandomString();
@@ -1116,17 +1093,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         JSONObject json_data = lista.getJSONObject(0);
                         mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Datos Personales").child("premium").setValue(IdPremium);
                         mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Premium").child(IdPremium).setValue(json_data);
-
-                    } catch (JSONException ignored) {
-                    }
-                },
-                volleyError -> Toast.makeText(MainActivity.this, volleyError.toString(), Toast.LENGTH_LONG).show());
+                    } catch (JSONException ignored) { }
+                }, volleyError -> Toast.makeText(MainActivity.this, volleyError.toString(), Toast.LENGTH_LONG).show());
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 2, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleySingleton.getIntanciaVolley(this.getActivity()).addToRequestQueue(jsonObjectRequest);
     }
 
         public void onClick(View v) {
-            Uri uri = null;
             switch (v.getId()) {
                 case R.id.btnMensual: {
                    // uri = Uri.parse("http://www.secsanluis.com.ar/servicios/varios/wimp/W_Premium.php?link=1");
@@ -1269,7 +1242,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         dialog.setCancelable(false);
         dialog.show(getFragmentManager(), "ACTUALIZAR");// Mostramos el dialogo
     }
-    // -------------------------------- Mostrar datos de masctota..........................................
+
     private void instaciarDialogoMostrarMarcadorMascota(Mascota mDatosMascota) {
         DialogShowPet dialog = new DialogShowPet(mDatosMascota);  //Instanciamos la clase con el dialogo
         dialog.setCancelable(false);
@@ -1307,7 +1280,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         private void CargarDatosTienda(View view, Tienda mTienda) {
             final TextView eDireccionTienda = view.findViewById(R.id.eDireccionTienda),
-                    eNombreTienda = view.findViewById(R.id.eNombreMascota),
+                    eNombreTienda = view.findViewById(R.id.eNombreTienda),
                     eTelefonoTienda=view.findViewById(R.id.eTelefonoTienda);
 
             final CircleImageView imgTienda = view.findViewById(R.id.imgFotoTienda);
@@ -1316,7 +1289,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             eNombreTienda.setText(mTienda.getNombre());
             eTelefonoTienda.setText(mTienda.getTelefono());
             GeneralMethod.GlideUrl(this.getActivity(), mTienda.getImagen(),imgTienda);
-            CargarPublicidadesTienda(mTienda,view);
+
+            // CargarPublicidadesTienda(mTienda,view);
         }
 
         private void CargarPublicidadesTienda(Tienda mTienda,View view) {
@@ -1346,29 +1320,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         dialog.setCancelable(false);
         dialog.show(getFragmentManager(), "MASCOTA");// Mostramos el dialogo
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

@@ -162,9 +162,12 @@ public class DialogRegistry extends DialogFragment implements View.OnClickListen
                         progressDialog.dismiss();
                         if (task.isSuccessful()) {
                             final Usuario.UsuarioPublico mUserPublic = new Usuario.UsuarioPublico()
-                                    .setIdUsuario(task.getResult().getUser().getUid())
                                     .setNombre(mNombreRegistroEditText.getText().toString())
-                                    .setApellido(mApellidoRegistroEditText.getText().toString());
+                                    .setApellido(mApellidoRegistroEditText.getText().toString())
+                                    .setIdUsuario(task.getResult().getUser().getUid());
+
+
+
                             if(!tipoDeFoto.equals("VACIO")) {
                                 storageIMG(mUserPublic);
                             }

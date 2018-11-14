@@ -101,9 +101,14 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         builder.setPositiveButton("GUARDAR", (dialog, id) -> {
             Marcadores mMascota = new Mascota()
                     .setIdMarcador(GeneralMethod.getRandomString())
+                    .setIdUsuario(Objects.requireNonNull(mFirebaseAuth.getCurrentUser()).getUid())
                     .setNombre(mNombreMascotaMarcador.getText().toString())
                     .setDescripcion(mDescripcionMascotaMarcador.getText().toString())
                     .setLatitud(String.valueOf(latLng.latitude))
+                    .setLongitud(String.valueOf(latLng.longitude))
+                    //.setTelefono(mTelefono.getText().toString())
+                    .setDireccion(GeneralMethod.ObtenerDireccion(latLng.latitude,latLng.longitude,this.getActivity()));
+            RegistrarMarcadorDeMascota((Mascota) mMascota);
                     .setLongitud(String.valueOf(latLng.longitude));
             if(ValidarCargaDeMascota(content)){
             RegistrarMarcadorDeMascota((Mascota) mMascota);}

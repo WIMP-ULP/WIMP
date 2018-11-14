@@ -2,48 +2,36 @@ package Modelo;
 
 public class Marcadores {
     private String idMarcador;
+    private String idUsuario;
     private String nombre;
     private String descripcion;
     private String imagen;
     private String latitud;
     private String longitud;
     private String telefono;
+    private String direccion;
 
-
-    public String getTelefono() { return telefono; }
-
-    public Marcadores setTelefono(String telefono) { this.telefono = telefono;
-        return this;
-    }
-
+    public Marcadores setIdUsuario(String idUsuario) { this.idUsuario = idUsuario;return this; }
+    public Marcadores setIdMarcador(String idMarcador) { this.idMarcador = idMarcador;return this; }
     public Marcadores setNombre(String nombre) { this.nombre = nombre; return this;}
     public Marcadores setDescripcion(String descripcion) { this.descripcion = descripcion; return this;}
+    public Marcadores setImagen(String imagen) { this.imagen = imagen; return this;}
     public Marcadores setLatitud(String posicion) { this.latitud = posicion; return this;}
     public Marcadores setLongitud(String longitud) { this.longitud = longitud; return this;}
-    public Marcadores setImagen(String imagen) { this.imagen = imagen; return this;}
-    public String getIdMarcador() {
-        return idMarcador;
-    }
+    public Marcadores setTelefono(String telefono) { this.telefono = telefono;return this; }
+    public Marcadores setDireccion(String direccion) { this.direccion = direccion;return this; }
 
-    public Marcadores setIdMarcador(String idMarcador) {
-        this.idMarcador = idMarcador;
-        return this;
-    }
 
-    public String getNombre() {
-        return nombre;
-    }
-    public String getDescripcion() {
-        return descripcion;
-    }
-    public String getLatitud() {
-        return latitud;
-    }
-    public String getLongitud() {
-        return longitud;
-    }
-    public String getImagen() {
-        return imagen;
-    }
+    public String getIdUsuario() { return idUsuario; }
+    public String getIdMarcador() { return idMarcador; }
+    public String getNombre() { return nombre; }
+    public String getDescripcion() { return descripcion; }
+    public String getImagen() { return imagen; }
+    public String getLatitud() { return latitud; }
+    public String getLongitud() { return longitud; }
+    public String getTelefono() { return telefono; }
+    public String getDireccion() { return direccion; }
+
+
 
 }
