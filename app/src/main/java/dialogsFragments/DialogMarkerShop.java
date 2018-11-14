@@ -70,6 +70,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
     private FirebaseAuth mFirebaseAuth;
     private StorageReference mStorageReference;
     private String pathCaptureShop;
+    private String UserId;
 
     private ProgressDialog progressDialog;
 
@@ -93,21 +94,28 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         mFotoTiendaMarcador = content.findViewById(R.id.imgMercado);
         mFotoTiendaMarcador.setOnClickListener(this);
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mStorageReference = FirebaseStorage.getInstance().getReference();
+
         //instanciar tienda para validacion
         mNombreTienda= content.findViewById(R.id.input_nombreShop);
         mDescripcionTienda=content.findViewById(R.id.input_descripcionShop);
         mTelefonoTienda=content.findViewById(R.id.input_telefonoShop);
         mDireccionTienda=content.findViewById(R.id.input_direccionShop);
 
+        UserId= FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
 
         builder.setPositiveButton("GUARDAR", (dialogInterface, i) -> {
             Marcadores mTienda = new Tienda()
+                    .setIdPublicidad("TODAVIA NO TENGO")
+                    .setIdUsuario(UserId)
+                    .setIdMarcador(GeneralMethod.getRandomString())
                     .setDireccion(mDireccionTiendaMarcador.getText().toString())
                     .setLongitud(String.valueOf(mLatLng.longitude))
                     .setLatitud(String.valueOf(mLatLng.latitude))
-                    .setIdMarcador(GeneralMethod.getRandomString())
                     .setNombre(mNombreTiendaMarcador.getText().toString())
                     .setDescripcion(mDescripcionTiendaMarcador.getText().toString())
                     .setTelefono(mTelefonoTiendaMarcador.getText().toString());
@@ -119,7 +127,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
             }
             return false;
         });
-ValidarCargaDeTienda(content);
+//ValidarCargaDeTienda(content);
         return builder.create();
     }
     private void CreateMarkers(LatLng latLng,GoogleMap googleMap, Tienda mMarcadorTienda) {
@@ -238,42 +246,33 @@ ValidarCargaDeTienda(content);
         progressDialog = new ProgressDialog(this.getActivity());
         progressDialog.setMessage("Registrando tienda...");
         progressDialog.show();
-
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference currentUserDB = mDatabase.child(Objects.requireNonNull(mFirebaseAuth.getCurrentUser()).getUid());
-
         if(!tipoDeFoto.equals("VACIO")) {
-            storageIMG(currentUserDB,mTienda,mDatabase,mTienda.getIdMarcador());
+            storageIMG(currentUserDB,mTienda,mDatabase);
         }
         else{
-
-            SubirRealtimeDatabase(currentUserDB,mTienda,mDatabase,mTienda.getIdMarcador());
-            mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Shop").child(mTienda.getIdMarcador()).child("imagen").setValue(Utils.mDefautMarkerShop);
+            mTienda.setImagen(Utils.mDefautMarkerShop);
+            SubirRealtimeDatabase(currentUserDB,mTienda,mDatabase);
         }
-
-
     }
 
-    private void SubirRealtimeDatabase(final DatabaseReference currentUserDB, final Tienda mTienda, final DatabaseReference mDatabase, final String nombreAleatorio){
-        mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Shop").child(nombreAleatorio).setValue(mTienda);
-
+    private void SubirRealtimeDatabase(final DatabaseReference currentUserDB, final Tienda mTienda, final DatabaseReference mDatabase){
+        mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Shop").child(mTienda.getIdMarcador()).setValue(mTienda);
         CreateMarkers(new LatLng(Double.valueOf(mTienda.getLatitud()),Double.valueOf(mTienda.getLongitud())),mGoogleMap,mTienda);
         progressDialog.dismiss();
     }
-    private void storageIMG(final DatabaseReference currentUserDB, final Tienda mTienda, final DatabaseReference mDatabase, final String nombreAleatorio ){
-        mStorageReference = FirebaseStorage.getInstance().getReference();
-        final StorageReference mStorageImgMarkerShop = mStorageReference.child("Imagenes").child("Marcadores").child("Shop").child(GeneralMethod.getRandomString());
-        mStorageImgMarkerShop.putFile(mUriTiendaMarcador).addOnSuccessListener(this.getActivity(), taskSnapshot -> {
-            SubirRealtimeDatabase(currentUserDB,mTienda,mDatabase,nombreAleatorio);
-            mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Shop").child(nombreAleatorio).child("imagen").setValue(mStorageImgMarkerShop.getDownloadUrl().getResult()).toString().replace("\"", "");
-        }).addOnFailureListener(this.getActivity(), e -> {
-            //GeneralMethod.showSnackback("Lo sentimos, pero ocurrio un incoveniente",,MainActivity.this);
-        });
+    private void storageIMG(final DatabaseReference currentUserDB, final Tienda mTienda, final DatabaseReference mDatabase ){
+        final StorageReference mStorageImgPerfilUsuario = mStorageReference.child("Imagenes").child("Marcadores").child("Shop").child(GeneralMethod.getRandomString());
+        mStorageImgPerfilUsuario.putFile(mUriTiendaMarcador).addOnSuccessListener(taskSnapshot -> mStorageImgPerfilUsuario.getDownloadUrl().addOnSuccessListener(uri -> {
+            mTienda.setImagen(uri.toString());
+            SubirRealtimeDatabase(currentUserDB,mTienda,mDatabase);
+        })).addOnFailureListener(e -> { });
 
     }
 
 
-    private Boolean ValidarCargaDeTienda(View view) {
+  /*  private Boolean ValidarCargaDeTienda(View view) {
 
 
         mNombreTienda.addTextChangedListener(new TextWatcher() {
@@ -335,7 +334,7 @@ ValidarCargaDeTienda(content);
         });
         return RespuestaValidacion;
     }
-
+*/
 
 
 

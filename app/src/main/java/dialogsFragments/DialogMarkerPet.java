@@ -146,16 +146,13 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference currentUserDB = mDatabase.child(Objects.requireNonNull(mFirebaseAuth.getCurrentUser()).getUid());
-
             if (!tipoDeFoto.equals("VACIO")) {
                 storageIMG(currentUserDB, mMascota, mDatabase);
-
             } else {
                 mMascota.setImagen(Utils.mDefaultPet);
                 SubirRealtimeDatabase(currentUserDB, mMascota, mDatabase);
             }
     }
-
 
     private void SubirRealtimeDatabase(final DatabaseReference currentUserDB, final Mascota mMascota, final DatabaseReference mDatabase){
         mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Pet").child(mMascota.getIdMarcador()).setValue(mMascota);

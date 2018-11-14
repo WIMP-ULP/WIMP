@@ -445,12 +445,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
             }break;
             case R.id.nav_ajustes:{instaciarAjustes();}break;
+       //     case R.id.floatingIsPremium:{instaciarMisMascotasFavoritas();break;}
             case R.id.nav_colaboradores:{startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.oferta.educacion.ulp&hl=es")));}break;
             case R.id.nav_mascota:{instaciarMisMascotas();}break;
             case R.id.nav_premium:{instaciarPremium();}break;
             case R.id.nav_terminosycondiciones:{instaciarTerminos();}break;
             case R.id.nav_nosotros:{instaciarNosotros();}break;
             case R.id.nav_compartir:{startActivity(Intent.createChooser(new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, "https://wwww.facebook.com/wimp.ulp.5"), "COMPARTIR")); }break;
+
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -501,12 +503,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         marker = (HashMap<String, Object>) dt.getValue();
                         if (marker != null) {
                             ListaMarcadoresTienda.add((Tienda) new Tienda()
-                                    .setIdPublicidad(Objects.requireNonNull(marker.get("idPublicidad")).toString()).setIdUsuario(Objects.requireNonNull(marker.get("idUsuario")).toString())
+                                    .setIdPublicidad(Objects.requireNonNull(marker.get("idPublicidad")).toString())
                                     .setIdUsuario(Objects.requireNonNull(marker.get("idUsuario")).toString())
                                     .setIdMarcador(Objects.requireNonNull(marker.get("idMarcador")).toString())
                                     .setNombre(Objects.requireNonNull(marker.get("nombre")).toString())
                                     .setDescripcion(Objects.requireNonNull(marker.get("descripcion")).toString())
-                                    .setTelefono(Objects.requireNonNull(marker.get("telefono")).toString())
                                     .setImagen(Objects.requireNonNull(marker.get("imagen")).toString())
                                     .setLatitud(Objects.requireNonNull(marker.get("latitud")).toString())
                                     .setLongitud(Objects.requireNonNull(marker.get("longitud")).toString())
@@ -1320,6 +1321,72 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         dialog.setCancelable(false);
         dialog.show(getFragmentManager(), "MASCOTA");// Mostramos el dialogo
     }
+
+
+
+
+    // ------------------------ DIALOG MIS MASCOTAS FAVORITAS-----------------------------------------
+    @SuppressLint("ValidFragment")
+    private class MisMascotasDialogFavoritos extends DialogFragment {
+        private ArrayList<Mascota>ListaMisMascotasFavoritas;
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View content = inflater.inflate(R.layout.dialog_my_favorites, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setView(content);
+            builder.setOnKeyListener((dialog, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    ListaMisMascotasFavoritas.clear();
+                    dismiss();
+                }
+                return false;
+            });
+            ListaMisMascotasFavoritas=new ArrayList<>();
+            CargarDatosMascotaRecyclerMisMascotasFavoritos(content);
+            return builder.create();
+        }
+        private void CargarDatosMascotaRecyclerMisMascotasFavoritos(View view) {
+            mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Marcadores").child("Shop").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot d:dataSnapshot.getChildren()){
+                        Mascota mMascota = d.getValue(Mascota.class);
+                        ListaMisMascotasFavoritas.add(mMascota);
+                    }
+                    recyclerFavoritos = view.findViewById(R.id.RecViewFavoritos2);
+                    recyclerFavoritos.setLayoutManager(new LinearLayoutManager(view.getContext()));
+                    AdaptadorMascota adapter = new AdaptadorMascota(ListaMisMascotasFavoritas,view.getContext());
+                    recyclerFavoritos.setAdapter(adapter);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
+        }
+
+
+    }
+///este metodo tiene que ver donde se  van a aguardar los favoritos  reccorrerlo, por eso salta el error en la line 1010
+
+
+    //cuando llames al boton de fb, deves ahcer lo mismo pero asigandole a listaFavorito y setear el campo del dialogo  que dice mis mascotas,  a mis favoritos...
+
+
+
+
+
+
+
+
+
+    private void instaciarMisMascotasFavoritas() {
+        MisMascotasDialogFavoritos dialog = new MisMascotasDialogFavoritos();  //Instanciamos la clase con el dialogo
+        dialog.setCancelable(false);
+        dialog.show(getFragmentManager(), "MIS_MASCOTAS");// Mostramos el dialogo
+
+    }
+
 
 }
 
