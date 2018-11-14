@@ -56,10 +56,11 @@ public class AdaptadorPublicidades extends RecyclerView.Adapter<AdaptadorPublici
         ViewHolderPublicidades(View itemView) {
             super( itemView );
 
-            tvtitulo=itemView.findViewById( R.id.TvTituloTienda);
-            tvprecio= itemView.findViewById( R.id.TvPrecioTienda );
-            tvdescripcion=itemView.findViewById( R.id.TvDescripcionTienda );
-            ivOferta= itemView.findViewById( R.id.IvOfertaTienda );
+
+            tvtitulo = itemView.findViewById( R.id.TvTituloTienda);
+            tvprecio = itemView.findViewById( R.id.TvPrecioTienda );
+            tvdescripcion = itemView.findViewById( R.id.TvDescripcionTienda );
+            ivOferta = itemView.findViewById( R.id.IvOfertaTienda );
         }
 
     }

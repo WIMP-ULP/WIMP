@@ -29,7 +29,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -46,6 +45,7 @@ import Modelo.Marcadores;
 import Modelo.Mascota;
 import de.hdodenhof.circleimageview.CircleImageView;
 import finalClass.GeneralMethod;
+import finalClass.Utils;
 
 @SuppressLint("ValidFragment")
 public class DialogMarkerPet extends DialogFragment implements View.OnClickListener{
@@ -64,13 +64,9 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
     private String pathCapturePets;
     private Uri mUriMascotaMarcador;
 
-    //Permisos
-    private static final int COD_SELECCIONA = 10;
-    private static final int COD_FOTO = 20;
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
+    private final Activity mActivityMarkerPet = this.getActivity();
 
-    // STRING DEFAULT IMG PET
-    final String defaultPet = "https://firebasestorage.googleapis.com/v0/b/wimp-219219.appspot.com/o/Imagenes%2FMarcadores%2FPet%2FdefaultPet.png?alt=media&token=9b6a329a-58ca-4ff7-81ec-46def18e9798";
     public DialogMarkerPet(GoogleMap map, LatLng latLng) {
         this.latLng = latLng;
         this.map = map;
@@ -121,7 +117,6 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.pet_markers)));
     }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -145,7 +140,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
 
         }
         else{
-            mMascota.setImagen(defaultPet);
+            mMascota.setImagen(Utils.mDefaultPet);
             SubirRealtimeDatabase(currentUserDB,mMascota,mDatabase);
         }
     }
@@ -169,7 +164,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
-                case COD_SELECCIONA: {
+                case Utils.COD_SELECCIONA: {
                     // URI Camara
                     mUriMascotaMarcador = Objects.requireNonNull(data).getData();
                     tipoDeFoto = "SELECCIONA";
@@ -180,7 +175,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                         e.printStackTrace();
                     }
                 }break;
-                case COD_FOTO: {
+                case Utils.COD_FOTO: {
                     MediaScannerConnection.scanFile(DialogMarkerPet.this.getActivity(), new String[]{pathCapturePets}, null,(path, uri) -> Log.i("Path", "" + path));
                     mFotoMascotaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeFile(pathCapturePets)));
                     mUriMascotaMarcador = Uri.fromFile(new File(pathCapturePets));
@@ -204,7 +199,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                 if (opciones[i].equals("Elegir de Galeria")) {
                     Intent intent=new Intent(Intent.ACTION_PICK);
                     intent.setType("image/");
-                    startActivityForResult(Intent.createChooser(intent, "Seleccione"), COD_SELECCIONA);
+                    startActivityForResult(Intent.createChooser(intent, "Seleccione"), Utils.COD_SELECCIONA);
                 } else {
                     dialogInterface.dismiss();
                 }
@@ -214,7 +209,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
     }
 
     private void abriCamara() {
-        File miFile = new File(Environment.getExternalStorageDirectory(), GeneralMethod.getDirectorioImagen());
+        File miFile = new File(Environment.getExternalStorageDirectory(), Utils.DIRECTORIO_IMAGEN);
         boolean isCreada = miFile.exists();
 
         if (!isCreada) {
@@ -224,7 +219,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
             Long consecutivo = System.currentTimeMillis() / 1000;
             String nombre = consecutivo.toString() + ".jpg";
 
-            pathCapturePets = Environment.getExternalStorageDirectory() + File.separator + GeneralMethod.getDirectorioImagen()
+            pathCapturePets = Environment.getExternalStorageDirectory() + File.separator + Utils.DIRECTORIO_IMAGEN
                     + File.separator + nombre;//indicamos la ruta de almacenamiento
 
             File fileImagen = new File(pathCapturePets);
@@ -240,8 +235,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
             } else {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagen));
             }
-            startActivityForResult(intent, COD_FOTO);
-
+            startActivityForResult(intent, Utils.COD_FOTO);
         }
 
     }
@@ -249,13 +243,12 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode==100){
-            if(grantResults.length==2 && grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED){//el dos representa los 2 permisos
+        if (requestCode == Utils.MIS_PERMISOS){
+            if(GeneralMethod.solicitaPermisosVersionesSuperiores(mActivityMarkerPet)){//el dos representa los 2 permisos
                 //GeneralMethod.showSnackback("Gracias por aceptar los permisos..!",mView,mActivity);
-                GeneralMethod.mostrarDialogOpciones(this.getActivity());
+                mostrarDialogOpciones();
             }
         }
-
     }
 
 }

@@ -64,7 +64,7 @@
     </android.support.constraint.ConstraintLayout>
 
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/IvOfertaTienda"
         android:layout_width="191dp"
         android:layout_height="173dp"

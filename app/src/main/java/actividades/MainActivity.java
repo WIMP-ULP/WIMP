@@ -104,7 +104,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -126,7 +125,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import dialogsFragments.DialogMarkerPet;
 import Modelo.Mascota;
 import dialogsFragments.DialogMarkerShop;
+import dialogsFragments.DialogShowPet;
 import finalClass.GeneralMethod;
+import finalClass.Utils;
 import misclases.VolleySingleton;
 
 
@@ -157,13 +158,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private Usuario.UsuarioPublico mUserPublic;
     //GOOGLE
     private GoogleSignInClient mGoogleSignInClient;
-
-    //STRING DE LOGUEO
-    final String mFacebook = "facebook.com",
-                mGoogle = "google.com",
-                mPassword = "password";
     //string tipo marcador
-
     private String tipoMarcador = "pet";
     // FLOATING ACTION BUTTON
     FloatingActionButton mFloatingActionButtonMarkers;
@@ -180,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private Map<String,ArrayList<Mascota>> mListaMarcadoresMascotas;
     private Map<String,ArrayList<Tienda>> mListaMarcadoresTiendas;
     private boolean fabExpanded = false;
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -191,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         setContentView(R.layout.activity_main);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         NavigationView navigationView = findViewById(R.id.nav_view);
         drawer = findViewById(R.id.drawer_layout);
         navigationView.setNavigationItemSelectedListener(this);
@@ -220,7 +214,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 MyLocation();
             }
         } catch (Exception ignored) { }
-        mImgFotoPerfil = (navigationView.getHeaderView(0)).findViewById(R.id.imgPerfilMenu);
+        //mImgFotoPerfil = (navigationView.getHeaderView(0)).findViewById(R.id.imgPerfilMenu);
+        mImgFotoPerfil = findViewById(R.id.imgPerfilMenu);
         mImgFotoPerfil.setOnClickListener(this);
         mFloatingActionButtonMarkers = findViewById(R.id.floatingMarkers);
         mFloatingActionButtonMarkers.setOnClickListener(this);
@@ -286,10 +281,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             UserId = Objects.requireNonNull(mUserFireBase).getUid();
             if (AccessToken.getCurrentAccessToken() != null) {
                 Toast.makeText(MainActivity.this, "Faceboook", LENGTH_SHORT).show();
-                VolverAlLogin(mFacebook);
+                VolverAlLogin(Utils.mFacebook);
             }
             if (mUserFireBase != null) {
-                VolverAlLogin(mPassword);
+                VolverAlLogin(Utils.mPassword);
             }
             /*if(mUserFireBase!=null)
             {
@@ -314,13 +309,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mFirebaseAuth.signOut();
         // Google sign out
         mGoogleSignInClient.signOut().addOnCompleteListener(this,
-                task -> VolverAlLogin(mGoogle));
+                task -> VolverAlLogin(Utils.mGoogle));
     }
 
     private void singOutFabebook() {
         mFirebaseAuth.signOut();
         LoginManager.getInstance().logOut();
-        VolverAlLogin(mFacebook);
+        VolverAlLogin(Utils.mFacebook);
     }
 
     private void VolverAlLogin(final String cerrar_sesion) {
@@ -404,15 +399,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void ActualizarCamara(LatLng COORDS) {
-        CameraPosition CamPos = new CameraPosition
-                .Builder()
-                .target(COORDS)
-                .zoom(16)
-                .bearing(-10)
-                .tilt(0)
-                .build();
-        CameraUpdate camUpdate = CameraUpdateFactory.newCameraPosition(CamPos);
-        googleMap.animateCamera(camUpdate);
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(COORDS).zoom(16).bearing(-10).tilt(0).build()));
     }
 
     private void GpsDesactivado() {
@@ -429,54 +416,36 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onBackPressed() {
-        //DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        if (drawer.isDrawerOpen(GravityCompat.START)) drawer.closeDrawer(GravityCompat.START);
+        else super.onBackPressed();
     }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.nav_salir) {
-            switch (mUserFireBase.getProviderData().get(1).getProviderId()) {
-                case "facebook.com":
-                    singOutFabebook();
-                    break;
-                case "google.com":
-                    signOutGoogle();
-                    break;
-                case "password":
-                    VolverAlLogin(mPassword);
-                    break;
-                default:break;
-            }
-
-        } else if (id == R.id.nav_ajustes) {
-            instaciarAjustes();
-        } else if (id == R.id.nav_colaboradores) {
-            Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.oferta.educacion.ulp&hl=es");
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(intent);
-        } else if (id == R.id.nav_mascota) {
-            instaciarMisMascotas();
-        } else if (id == R.id.nav_premium) {
-            instaciarPremium();
-        } else if (id == R.id.nav_terminosycondiciones) {
-            instaciarTerminos();
-        } else if (id == R.id.nav_nosotros) {
-            instaciarNosotros();
-        } else if (id == R.id.nav_compartir) {
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, "https://wwww.facebook.com/wimp.ulp.5");
-            startActivity(Intent.createChooser(intent, "COMPARTIR"));
+        switch (item.getItemId()){
+            case R.id.nav_salir: {
+                switch (mUserFireBase.getProviderData().get(1).getProviderId()) {
+                    case "facebook.com":
+                        singOutFabebook();
+                        break;
+                    case "google.com":
+                        signOutGoogle();
+                        break;
+                    case "password":
+                        VolverAlLogin(Utils.mPassword);
+                        break;
+                    default:
+                        break;
+                }
+            }break;
+            case R.id.nav_ajustes:{instaciarAjustes();}break;
+            case R.id.nav_colaboradores:{startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.oferta.educacion.ulp&hl=es")));}break;
+            case R.id.nav_mascota:{instaciarMisMascotas();}break;
+            case R.id.nav_premium:{instaciarPremium();}break;
+            case R.id.nav_terminosycondiciones:{instaciarTerminos();}break;
+            case R.id.nav_nosotros:{instaciarNosotros();}break;
+            case R.id.nav_compartir:{startActivity(Intent.createChooser(new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, "https://wwww.facebook.com/wimp.ulp.5"), "COMPARTIR")); }break;
         }
-
-        //DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -550,30 +519,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     CargarMarcadoresTienda((Tienda)m);
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
 
     private void CargarMarcadoresMascota(final Mascota myMarker){
-        LatLng latLng = new LatLng(Double.valueOf(myMarker.getLatitud()),Double.valueOf(myMarker.getLongitud()));
         googleMap.addMarker(new MarkerOptions()
-                .position(latLng)
+                .position(new LatLng(Double.valueOf(myMarker.getLatitud()),Double.valueOf(myMarker.getLongitud())))
                 .title(String.valueOf(myMarker.getIdMarcador()))
                 .snippet(myMarker.getDescripcion())
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.pet_markers)));
     }
     private void CargarMarcadoresTienda(final Tienda myMarker){
-        LatLng latLng = new LatLng(Double.valueOf(myMarker.getLatitud()),Double.valueOf(myMarker.getLongitud()));
         googleMap.addMarker(new MarkerOptions()
-                .position(latLng)
+                .position(new LatLng(Double.valueOf(myMarker.getLatitud()),Double.valueOf(myMarker.getLongitud())))
                 .title(String.valueOf(myMarker.getIdMarcador()))
                 .snippet(myMarker.getDescripcion())
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.shop_markers)));
-
     }
 
     @Override
@@ -592,76 +557,56 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         googleMap.setOnMarkerClickListener(marker -> {
-          for(Marcadores x :ListaMarcadoresTienda)
-          {
-              if(marker.getTitle().equals(x.getIdMarcador())) {
-                  instaciarDialogoMostrarMarcadorTienda((Tienda) x);
-              }
-
+          for(Marcadores markerShop :ListaMarcadoresTienda) {
+              if(marker.getTitle().equals(markerShop.getIdMarcador())) {
+                  instaciarDialogoMostrarMarcadorTienda((Tienda) markerShop); }
           }
-          for(Marcadores x :ListaMarcadoresMacota) {
-              if (marker.getTitle().equals(x.getIdMarcador())) {
-                  instaciarDialogoMostrarMarcadorMascota((Mascota) x);
-
-              }
+          for(Marcadores markerPet :ListaMarcadoresMacota) {
+              if (marker.getTitle().equals(markerPet.getIdMarcador())) {
+                  instaciarDialogoMostrarMarcadorMascota((Mascota) markerPet); }
           }
           return false;
         });
     }
-    private int getRaw(Context c, String name) {
-        return c.getResources().getIdentifier(name, "raw", c.getPackageName());
+    private int getRaw(Context context, String name) {
+        return context.getResources().getIdentifier(name, "raw", context.getPackageName());
     }
 
     //-----------------------------------PREFERENCIAS---------------------------------------------------------------------------
     private void SaveStyle(String value){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("estilo_mapa", value);
         editor.apply();
     }
 
     private String LoadStyle(){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         return sharedPreferences.getString("estilo_mapa", "default");
-
     }
 
     private void GuardarTipoDeLogin(final PreferenciasLogin cerrar_sesion){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("type_sign_out",cerrar_sesion.getTipoSignOut());
         editor.putString("type_sign_in",cerrar_sesion.getTipoSignOut());
         editor.putBoolean("remember",cerrar_sesion.isRecordarUsuario());
         editor.apply();
     }
-    private void GuardarNotificacionesCercanas(boolean cercanas)
-    {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    private void GuardarNotificacionesCercanas(boolean cercanas) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("notificaciones_cercanas",cercanas);
         editor.apply();
         Log.i("boolean Guardar", (editor.toString()));
     }
-    private boolean LoadNotificationsCercanas()
-    {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    private boolean LoadNotificationsCercanas() {
         return sharedPreferences.getBoolean("notificaciones_cercanas", true);
-
     }
     private void GuardarNotificacionesOfertas(boolean ofertas){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("notificaciones_ofertas",ofertas);
         editor.apply();
     }
-    private boolean LoadNotificationsOfertas()
-    {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    private boolean LoadNotificationsOfertas() {
         return sharedPreferences.getBoolean("notificaciones_ofertas", true);
-
     }
-
-
 
     @Override
     public void onClick(View view) {
@@ -1291,120 +1236,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         dialog.setCancelable(false);
         dialog.show(getFragmentManager(), "ACTUALIZAR");// Mostramos el dialogo
     }
-    // -------------------------------- Mostrar datos de masctota..........................................
-    @SuppressLint("ValidFragment")
-    private class DialogMostrarMarcadorMascota extends DialogFragment implements View.OnClickListener {
-        private Marcadores mDatosMascotas;
-        private EditText eComentario;
-        private int estadoTeclado = 0;
-        private boolean click = false;
-        private RecyclerView recyclerComentarios;
-        private ArrayList<Comentario> mListaComentario;
 
-        public DialogMostrarMarcadorMascota(Mascota mDatosMascotas){
-            this.mDatosMascotas = mDatosMascotas;
-            mListaComentario = new ArrayList<>();
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            View content = inflater.inflate(R.layout.dialog_marcador, null);
-            eComentario = content.findViewById(R.id.eComentarMarcador);
-            FloatingActionButton mFabComentar=content.findViewById(R.id.fabComentar);
-            recyclerComentarios = content.findViewById(R.id.RecViewComentario);
-            recyclerComentarios.setLayoutManager(new LinearLayoutManager(content.getContext()));
-            recyclerComentarios.setOnClickListener(this);
-            eComentario.setOnClickListener(this);
-            mFabComentar.setOnClickListener(this);
-
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setView(content);
-            builder.setOnKeyListener((dialog, keyCode, event) -> {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    dismiss();
-                }
-                return false;
-            });
-            CargarDatosMascota(content,(Mascota) mDatosMascotas);
-            return builder.create();
-        }
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.eComentarMarcador: {
-                    InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-                    if (estadoTeclado == 0) {
-                        if (imm != null) {
-                            eComentario.setText("");
-                            estadoTeclado = 1;
-                        }
-                    }
-                }break;
-                case R.id.fabComentar:{
-                    click = !click;
-                    Comentario mComentario = new Comentario()
-                            .setReceptorID(mDatosMascotas.getIdUsuario())
-                            .setEmisorID(UserId)
-                            .setCuerpo(eComentario.getText().toString())
-                            .setUrlFoto(getImageUrlUser())
-                            .setFechaHora(new Date().toString())
-                            .setIdComentario(GeneralMethod.getRandomString())
-                            .setIdMarcador(mDatosMascotas.getIdMarcador());
-                    mDatabase.child("Usuarios").child(mComentario.getReceptorID()).child("Marcadores").child("Comentarios").child(mComentario.getIdComentario()).setValue(mComentario);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                        v.animate()
-                                .rotation(click ? 45f : 0)
-                                .setInterpolator(AnimationUtils.loadInterpolator(getBaseContext(), android.R.interpolator.fast_out_slow_in))
-                                .start();
-                    }
-                }break;
-            }
-        }
-
-        private void CargarDatosMascota(View view, Mascota mMascota) {
-            final TextView eDescripcionMascota = view.findViewById(R.id.eDescripcionMascota),
-                    eNombreMascota = view.findViewById(R.id.eNombreMascota);
-            final CircleImageView imgMascota = view.findViewById(R.id.imgFotomascota);
-
-            eDescripcionMascota.setText(mMascota.getDescripcion());
-            eNombreMascota.setText(mMascota.getNombre());
-            GeneralMethod.GlideUrl(this.getActivity(), mMascota.getImagen(),imgMascota);
-            CargarComentariosMascota(mMascota,view);
-        }
-
-        // ver que el id de mascota esta en los comentarios relacion de 1 a muchos
-        private void CargarComentariosMascota(Mascota mMascota,View view) {
-            mDatabase.child("Usuarios").child(Objects.requireNonNull(mMascota.getIdUsuario())).child("Marcadores").child("Comentarios").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(DataSnapshot mDataSnapshot : dataSnapshot.getChildren()){
-                        Comentario mComentario = mDataSnapshot.getValue(Comentario.class);
-                        if (mComentario != null && mComentario.getIdMarcador().equals(mMascota.getIdMarcador()))
-                            mListaComentario.add(mComentario);
-                    }
-                    if(mListaComentario.size()!=0 && mListaComentario.get(0) != null){
-                        view.findViewById(R.id.imgSinCompentarios).setVisibility(View.GONE);
-                        AdaptadorComentarios adaptadorComentarios = new AdaptadorComentarios(mListaComentario,view.getContext());
-                        adaptadorComentarios.notifyDataSetChanged();
-                        recyclerComentarios.setAdapter(adaptadorComentarios);
-                    }
-                    else
-                        view.findViewById(R.id.imgSinCompentarios).setVisibility(View.VISIBLE);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {}
-            });
-        }
-    }
     private void instaciarDialogoMostrarMarcadorMascota(Mascota mDatosMascota) {
-        DialogMostrarMarcadorMascota dialog = new DialogMostrarMarcadorMascota(mDatosMascota);  //Instanciamos la clase con el dialogo
+        DialogShowPet dialog = new DialogShowPet(mDatosMascota);  //Instanciamos la clase con el dialogo
         dialog.setCancelable(false);
         dialog.show(getFragmentManager(), "MASCOTA");// Mostramos el dialogo
     }
-
     // -------------------------------- Mostrar datos de Tienda..........................................
     @SuppressLint("ValidFragment")
     private class DialogMostrarMarcadorTienda extends DialogFragment implements View.OnClickListener {
@@ -1412,7 +1249,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         public DialogMostrarMarcadorTienda(Tienda mDatosTienda){
             this.mDatosTienda = mDatosTienda;
         }
-
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {

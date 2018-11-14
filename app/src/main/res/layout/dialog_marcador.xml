@@ -24,6 +24,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.744">
 
+        <TextView
+            android:id="@+id/eTelefonoMascota"
+            android:layout_width="114dp"
+            android:layout_height="31dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="120dp"
+            android:text="@string/telefono"
+            android:textAlignment="textStart"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/linearLayout2"
+            app:layout_constraintTop_toBottomOf="@+id/eNombreMascota" />
+
         <include
             layout="@layout/dialog_comentar_marcador_mascota"
             android:layout_width="0dp"
@@ -62,8 +77,8 @@
 
         <TextView
             android:id="@+id/eNombreMascota"
-            android:layout_width="133dp"
-            android:layout_height="30dp"
+            android:layout_width="135dp"
+            android:layout_height="37dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"

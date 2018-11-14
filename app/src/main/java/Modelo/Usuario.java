@@ -45,23 +45,10 @@ public class Usuario {
     }
 
 
-
-
     public static class UsuarioPublico{
         private String nombre;
         private String apellido;
         private String imagen;
-
-        public String getPremium() {
-            return premium;
-        }
-
-        public UsuarioPublico setPremium(String premium) {
-            this.premium = premium;
-            return this;
-        }
-
-        private String premium;
 
         public String getApellido() {
             return apellido;
