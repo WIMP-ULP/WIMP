@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+import Modelo.CustomInfoWindowAdapter;
 import Modelo.Marcadores;
 import Modelo.Tienda;
 import finalClass.GeneralMethod;
@@ -61,7 +63,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
     private Uri mUriTiendaMarcador;
     private String tipoDeFoto = "VACIO";
     //Firebase
-    private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mUserFireBase;
     private StorageReference mStorageReference;
     private String pathCaptureShop;
 
@@ -86,16 +88,18 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         mDireccionTiendaMarcador = content.findViewById(R.id.input_direccionShop);
         mFotoTiendaMarcador = content.findViewById(R.id.imgMercado);
         mFotoTiendaMarcador.setOnClickListener(this);
-        mFirebaseAuth = FirebaseAuth.getInstance();
+        mUserFireBase = FirebaseAuth.getInstance().getCurrentUser();
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
 
         builder.setPositiveButton("GUARDAR", (dialogInterface, i) -> {
             Marcadores mTienda = new Tienda()
+                    .setIdPublicidad("TODAVIA NO TENGO")
+                    .setIdUsuario(mUserFireBase.getUid())
+                    .setIdMarcador(GeneralMethod.getRandomString())
                     .setDireccion(mDireccionTiendaMarcador.getText().toString())
                     .setLongitud(String.valueOf(mLatLng.longitude))
                     .setLatitud(String.valueOf(mLatLng.latitude))
-                    .setIdMarcador(GeneralMethod.getRandomString())
                     .setNombre(mNombreTiendaMarcador.getText().toString())
                     .setDescripcion(mDescripcionTiendaMarcador.getText().toString())
                     .setTelefono(mTelefonoTiendaMarcador.getText().toString());
@@ -111,6 +115,8 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         return builder.create();
     }
     private void CreateMarkers(LatLng latLng,GoogleMap googleMap, Tienda mMarcadorTienda) {
+        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(DialogMarkerShop.this.getActivity().getApplicationContext()), mMarcadorTienda, DialogMarkerShop.this.getActivity()));
+
         googleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(String.valueOf(mMarcadorTienda.getNombre()))
@@ -226,37 +232,27 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         progressDialog = new ProgressDialog(this.getActivity());
         progressDialog.setMessage("Registrando tienda...");
         progressDialog.show();
-
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference currentUserDB = mDatabase.child(Objects.requireNonNull(mFirebaseAuth.getCurrentUser()).getUid());
-
         if(!tipoDeFoto.equals("VACIO")) {
-            storageIMG(currentUserDB,mTienda,mDatabase,mTienda.getIdMarcador());
+            storageIMG(mTienda,mDatabase);
         }
         else{
-
-            SubirRealtimeDatabase(currentUserDB,mTienda,mDatabase,mTienda.getIdMarcador());
-            mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Shop").child(mTienda.getIdMarcador()).child("imagen").setValue(Utils.mDefautMarkerShop);
+            mTienda.setImagen(Utils.mDefautMarkerShop);
+            SubirRealtimeDatabase(mTienda,mDatabase);
         }
-
-
     }
 
-    private void SubirRealtimeDatabase(final DatabaseReference currentUserDB, final Tienda mTienda, final DatabaseReference mDatabase, final String nombreAleatorio){
-        mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Shop").child(nombreAleatorio).setValue(mTienda);
-
+    private void SubirRealtimeDatabase(final Tienda mTienda, final DatabaseReference mDatabase){
+        mDatabase.child("Usuarios").child(Objects.requireNonNull(mUserFireBase.getUid())).child("Marcadores").child("Shop").child(mTienda.getIdMarcador()).setValue(mTienda);
         CreateMarkers(new LatLng(Double.valueOf(mTienda.getLatitud()),Double.valueOf(mTienda.getLongitud())),mGoogleMap,mTienda);
         progressDialog.dismiss();
     }
-    private void storageIMG(final DatabaseReference currentUserDB, final Tienda mTienda, final DatabaseReference mDatabase, final String nombreAleatorio ){
-        mStorageReference = FirebaseStorage.getInstance().getReference();
-        final StorageReference mStorageImgMarkerShop = mStorageReference.child("Imagenes").child("Marcadores").child("Shop").child(GeneralMethod.getRandomString());
-        mStorageImgMarkerShop.putFile(mUriTiendaMarcador).addOnSuccessListener(this.getActivity(), taskSnapshot -> {
-            SubirRealtimeDatabase(currentUserDB,mTienda,mDatabase,nombreAleatorio);
-            mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Shop").child(nombreAleatorio).child("imagen").setValue(mStorageImgMarkerShop.getDownloadUrl().getResult()).toString().replace("\"", "");
-        }).addOnFailureListener(this.getActivity(), e -> {
-            //GeneralMethod.showSnackback("Lo sentimos, pero ocurrio un incoveniente",,MainActivity.this);
-        });
+    private void storageIMG(final Tienda mTienda, final DatabaseReference mDatabase ){
+        final StorageReference mStorageImgPerfilUsuario = mStorageReference.child("Imagenes").child("Marcadores").child("Shop").child(GeneralMethod.getRandomString());
+        mStorageImgPerfilUsuario.putFile(mUriTiendaMarcador).addOnSuccessListener(taskSnapshot -> mStorageImgPerfilUsuario.getDownloadUrl().addOnSuccessListener(uri -> {
+            mTienda.setImagen(uri.toString());
+            SubirRealtimeDatabase(mTienda,mDatabase);
+        })).addOnFailureListener(e -> { });
 
     }
 }

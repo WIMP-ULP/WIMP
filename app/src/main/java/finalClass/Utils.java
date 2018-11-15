@@ -22,7 +22,8 @@ public final class Utils {
     public static final int MIS_PERMISOS = 100;
     //GOOGLE
     public static final int RC_SIGN_IN = 1;
-
+    //PREMIUM
+    public static final String PREMIUM = "http://wimp/pagos";
 
     //IMAGEN CARPETA
     public static final String DIRECTORIO_IMAGEN = "WIMP/imagenes";//ruta carpeta de directorios

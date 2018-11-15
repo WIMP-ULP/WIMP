@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -30,6 +29,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+import Modelo.CustomInfoWindowAdapter;
 import Modelo.Marcadores;
 import Modelo.Mascota;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -50,11 +51,11 @@ import finalClass.Utils;
 @SuppressLint("ValidFragment")
 public class DialogMarkerPet extends DialogFragment implements View.OnClickListener{
     //Componentes
-    private EditText mNombreMascotaMarcador,mDescripcionMascotaMarcador;
+    private EditText mNombreMascotaMarcador,mDescripcionMascotaMarcador,mTelefonoMascotaMarcador;
     private CircleImageView mFotoMascotaMarcador;
     private String tipoDeFoto = "VACIO";
     //Firebase
-    private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mUserFireBase;
     private StorageReference mStorageReference;
 
     //Mapa
@@ -81,19 +82,24 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         View content = inflater.inflate(R.layout.dialog_pets, null);
         mNombreMascotaMarcador = content.findViewById(R.id.input_nombre);
         mDescripcionMascotaMarcador = content.findViewById(R.id.input_descripcion);
+        mTelefonoMascotaMarcador=content.findViewById(R.id.input_telefono);
         mFotoMascotaMarcador = content.findViewById(R.id.imgMascota);
         mFotoMascotaMarcador.setOnClickListener(this);
         mStorageReference = FirebaseStorage.getInstance().getReference();
-        mFirebaseAuth = FirebaseAuth.getInstance();
+        mUserFireBase = FirebaseAuth.getInstance().getCurrentUser();
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
         builder.setPositiveButton("GUARDAR", (dialog, id) -> {
             Marcadores mMascota = new Mascota()
                     .setIdMarcador(GeneralMethod.getRandomString())
+                    .setIdUsuario(Objects.requireNonNull(mUserFireBase).getUid())
                     .setNombre(mNombreMascotaMarcador.getText().toString())
                     .setDescripcion(mDescripcionMascotaMarcador.getText().toString())
                     .setLatitud(String.valueOf(latLng.latitude))
-                    .setLongitud(String.valueOf(latLng.longitude));
+                    .setLongitud(String.valueOf(latLng.longitude))
+                    .setTelefono(mTelefonoMascotaMarcador.getText().toString())
+                    .setLongitud(String.valueOf(latLng.longitude))
+                    .setDireccion(/*GeneralMethod.ObtenerDireccion(latLng.latitude,latLng.longitude,this.getActivity())*/"DIRECCION DE MIERDA");
             RegistrarMarcadorDeMascota((Mascota) mMascota);
         });
         builder.setOnKeyListener((dialog, keyCode, event) -> {
@@ -106,7 +112,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
     }
 
     private void CreateMarkers(LatLng latLng,GoogleMap googleMap, Mascota mMarcadorMascota) {
-       // googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(DialogMarkerPet.this.getActivity().getApplicationContext()), marcadorMacota, DialogMarkerPet.this.getActivity()));
+       googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(DialogMarkerPet.this.getActivity().getApplicationContext()), mMarcadorMascota, DialogMarkerPet.this.getActivity()));
         googleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(String.valueOf(mMarcadorMascota.getIdMarcador()))
@@ -130,29 +136,28 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         progressDialog.show();
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference currentUserDB = mDatabase.child(Objects.requireNonNull(mFirebaseAuth.getCurrentUser()).getUid());
 
         if(!tipoDeFoto.equals("VACIO")) {
-            storageIMG(currentUserDB,mMascota,mDatabase);
+            storageIMG(mMascota,mDatabase);
 
         }
         else{
             mMascota.setImagen(Utils.mDefaultPet);
-            SubirRealtimeDatabase(currentUserDB,mMascota,mDatabase);
+            SubirRealtimeDatabase(mMascota,mDatabase);
         }
     }
 
-    private void SubirRealtimeDatabase(final DatabaseReference currentUserDB, final Mascota mMascota, final DatabaseReference mDatabase){
-        mDatabase.child("Usuarios").child(Objects.requireNonNull(currentUserDB.getKey())).child("Marcadores").child("Pet").child(mMascota.getIdMarcador()).setValue(mMascota);
+    private void SubirRealtimeDatabase(final Mascota mMascota, final DatabaseReference mDatabase){
+        mDatabase.child("Usuarios").child(Objects.requireNonNull(mUserFireBase.getUid())).child("Marcadores").child("Pet").child(mMascota.getIdMarcador()).setValue(mMascota);
         CreateMarkers(new LatLng(Double.valueOf(mMascota.getLatitud()),Double.valueOf(mMascota.getLongitud())),map, mMascota);
         FirebaseMessaging.getInstance().subscribeToTopic(mMascota.getIdMarcador()).addOnSuccessListener(aVoid -> { });
         progressDialog.dismiss();
     }
-    private void storageIMG(final DatabaseReference currentUserDB, final Mascota mMascota, final DatabaseReference mDatabase){
+    private void storageIMG(final Mascota mMascota, final DatabaseReference mDatabase){
         final StorageReference mStorageImgPerfilUsuario = mStorageReference.child("Imagenes").child("Marcadores").child("Pet").child(GeneralMethod.getRandomString());
         mStorageImgPerfilUsuario.putFile(mUriMascotaMarcador).addOnSuccessListener(taskSnapshot -> mStorageImgPerfilUsuario.getDownloadUrl().addOnSuccessListener(uri -> {
             mMascota.setImagen(uri.toString());
-            SubirRealtimeDatabase(currentUserDB,mMascota,mDatabase);
+            SubirRealtimeDatabase(mMascota,mDatabase);
         })).addOnFailureListener(e -> { });
     }
 

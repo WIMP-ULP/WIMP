@@ -3,7 +3,6 @@ package actividades;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -44,20 +43,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.toolbox.JsonObjectRequest;
-
-import com.bumptech.glide.util.Util;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -66,7 +58,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -77,7 +68,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -90,18 +80,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.whereismypet.whereismypet.R;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -117,18 +102,16 @@ import Modelo.PreferenciasLogin;
 import Modelo.Publicidad;
 import Modelo.Tienda;
 import Modelo.Usuario;
-import adaptadores.AdaptadorComentarios;
 import adaptadores.AdaptadorMascota;
 import adaptadores.AdaptadorPublicidades;
 import de.hdodenhof.circleimageview.CircleImageView;
 import dialogsFragments.DialogMarkerPet;
 import Modelo.Mascota;
 import dialogsFragments.DialogMarkerShop;
+import dialogsFragments.DialogPremium;
 import dialogsFragments.DialogShowPet;
 import finalClass.GeneralMethod;
 import finalClass.Utils;
-import misclases.VolleySingleton;
-
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -144,11 +127,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     AlertDialog alertGPS = null;
     Location Localizacion;
     DrawerLayout drawer;
-    CircleImageView mImgFotoPerfil, imgPetsMarker;
-    private static final String URL_MARCADORES = "http://www.secsanluis.com.ar/servicios/varios/wimp/W_ListarMarcadores.php";
-    static final String TAG = MainActivity.class.getSimpleName();
+    CircleImageView mImgFotoPerfil;
     private SharedPreferences sharedPreferences;
-    private ArrayList<Mascota> listaMarcador;
     static final int PETICION_PERMISO_LOCALIZACION = 0;
     //FIREBASE
     private FirebaseAuth mFirebaseAuth;
@@ -229,24 +209,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void Escuchador() {
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        // Get deep link from result (may be null if no link is found)
-                        Uri deepLink = null;
-                        if (pendingDynamicLinkData != null) {
-                            deepLink = pendingDynamicLinkData.getLink();
-                        }
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("mLinks", "getDynamicLink:onFailure", e);
-                    }
-                });
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
@@ -286,12 +248,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             if (mUserFireBase != null) {
                 VolverAlLogin(Utils.mPassword);
             }
-            /*if(mUserFireBase!=null)
-            {
-                user = new Usuario();
-                //user.setNombre(userFireBase.getDisplayName());
-                user.setEmail(mUserFireBase.getEmail());
-            }*/
         };
     }
 
@@ -469,12 +425,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             marker = (HashMap<String, Object>) dt.getValue();
                             if (marker != null) {
                                 ListaMarcadoresMacota.add((Mascota) new Mascota()
+                                        .setIdUsuario(Objects.requireNonNull(marker.get("idUsuario")).toString())
                                         .setIdMarcador(Objects.requireNonNull(marker.get("idMarcador")).toString())
                                         .setNombre(Objects.requireNonNull(marker.get("nombre")).toString())
                                         .setDescripcion(Objects.requireNonNull(marker.get("descripcion")).toString())
                                         .setImagen(Objects.requireNonNull(marker.get("imagen")).toString())
                                         .setLatitud(Objects.requireNonNull(marker.get("latitud")).toString())
-                                        .setLongitud(Objects.requireNonNull(marker.get("longitud")).toString()));
+                                        .setLongitud(Objects.requireNonNull(marker.get("longitud")).toString())
+                                        .setTelefono(Objects.requireNonNull(marker.get("telefono")).toString())
+                                        .setDireccion(Objects.requireNonNull(marker.get("direccion")).toString()));
                             }
                         }
                     if (keyUserPet != null) {
@@ -491,14 +450,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         if (marker != null) {
                             ListaMarcadoresTienda.add((Tienda) new Tienda()
                                     .setIdPublicidad(Objects.requireNonNull(marker.get("idPublicidad")).toString())
-                                    .setDireccion(Objects.requireNonNull(marker.get("direccion")).toString())
+                                    .setIdUsuario(Objects.requireNonNull(marker.get("idUsuario")).toString())
                                     .setIdMarcador(Objects.requireNonNull(marker.get("idMarcador")).toString())
                                     .setNombre(Objects.requireNonNull(marker.get("nombre")).toString())
                                     .setDescripcion(Objects.requireNonNull(marker.get("descripcion")).toString())
-                                    .setTelefono(Objects.requireNonNull(marker.get("telefono")).toString())
                                     .setImagen(Objects.requireNonNull(marker.get("imagen")).toString())
                                     .setLatitud(Objects.requireNonNull(marker.get("latitud")).toString())
-                                    .setLongitud(Objects.requireNonNull(marker.get("longitud")).toString()));
+                                    .setLongitud(Objects.requireNonNull(marker.get("longitud")).toString())
+                                    .setTelefono(Objects.requireNonNull(marker.get("telefono")).toString())
+                                    .setDireccion(Objects.requireNonNull(marker.get("direccion")).toString()));
                         }
                     }
 
@@ -543,11 +503,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 int resID = getRaw(this,LoadStyle());
                 boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, resID));
                 if (!success) {
-                    Log.e(TAG, "Style parsing failed.");
                 }
             }
         } catch (Resources.NotFoundException e) {
-            Log.e(TAG, "Can't find style. Error: ", e);
         }
 
         googleMap.setOnMarkerClickListener(marker -> {
@@ -782,11 +740,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             fondoVintage = content.findViewById(R.id.btVintage);
             fondoVintage.setOnClickListener(this);
             imagen1=content.findViewById(R.id.checkmapa1);
-                    imagen2=content.findViewById(R.id.checkmapa2);
-                    imagen3=content.findViewById(R.id.checkmapa3);
-                    imagen4=content.findViewById(R.id.checkmapa4);
-                    swgoogle=content.findViewById(R.id.swEstiloGoogle);
-                    swgoogle.setOnClickListener(this);
+            imagen2=content.findViewById(R.id.checkmapa2);
+            imagen3=content.findViewById(R.id.checkmapa3);
+            imagen4=content.findViewById(R.id.checkmapa4);
+            swgoogle=content.findViewById(R.id.swEstiloGoogle);
+            swgoogle.setOnClickListener(this);
 
     //////----- PREFERECIAS------ MAPA SELECCIONADO----- CON UN SWICH Y LOADSTYLE
             if(!LoadStyle().equals("default")) {
@@ -834,14 +792,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                         seleccionarMapa(imagen1,imagen2, imagen3, imagen4, swgoogle);
                         boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.json_blue));
-
-                        if (!success) {
-
-                            Log.e(TAG, "Style parsing failed.");
-                        }
-                    } catch (Resources.NotFoundException e) {
-                        Log.e(TAG, "Can't find style. Error: ", e);
-                    }
+                        if (!success) { }
+                    } catch (Resources.NotFoundException e) { }
                     SaveStyle("json_blue");
 
                     Toast.makeText(MainActivity.this, "Se aplico el nuevo estilo de mapa", Toast.LENGTH_SHORT).show();
@@ -855,13 +807,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                 MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.json_black));
                         SaveStyle("json_black");
 
-                        if (!success) {
-
-                            Log.e(TAG, "Style parsing failed.");
-                        }
-                    } catch (Resources.NotFoundException e) {
-                        Log.e(TAG, "Can't find style. Error: ", e);
-                    }
+                        if (!success) { }
+                    } catch (Resources.NotFoundException e) { }
 
                     Toast.makeText(MainActivity.this, "Se aplico el nuevo estilo de mapa", Toast.LENGTH_SHORT).show();
                     break;
@@ -873,13 +820,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                 MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.json_candy));
                         SaveStyle("json_candy");
 
-                        if (!success) {
-
-                            Log.e(TAG, "Style parsing failed.");
-                        }
-                    } catch (Resources.NotFoundException e) {
-                        Log.e(TAG, "Can't find style. Error: ", e);
-                    }
+                        if (!success) { }
+                    } catch (Resources.NotFoundException e) { }
 
                     Toast.makeText(MainActivity.this, "Se aplico el nuevo estilo de mapa", Toast.LENGTH_SHORT).show();
                     break;
@@ -891,14 +833,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                 MapStyleOptions.loadRawResourceStyle(getActivity(), R.raw.json_vintage));
                         SaveStyle("json_vintage");
 
-                        if (!success) {
-
-
-                            Log.e(TAG, "Style parsing failed.");
-                        }
-                    } catch (Resources.NotFoundException e) {
-                        Log.e(TAG, "Can't find style. Error: ", e);
-                    }
+                        if (!success) { }
+                    } catch (Resources.NotFoundException e) { }
 
                     Toast.makeText(MainActivity.this, "Se aplico el nuevo estilo de mapa", Toast.LENGTH_SHORT).show();
                     break;
@@ -1072,78 +1008,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     // ------------------------ DIALOG PREMIUM-----------------------------------------
-    @SuppressLint("ValidFragment")
-    private class PremiumDialog extends DialogFragment implements View.OnClickListener {//IMPLEMENTAR EL CLICK EN EL DIALOGO
-        CardView mMensual,mTrimestral,mSemestral;
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            View content = inflater.inflate(R.layout.dialog_premium, null);
-            //// ESTO AGREGUE
-            mMensual = content.findViewById(R.id.btnMensual);
-            mTrimestral = content.findViewById(R.id.btnTrimestral);
-            mSemestral = content.findViewById(R.id.btnSemestral);
-            mMensual.setOnClickListener(this);
-            mTrimestral.setOnClickListener(this);
-            mSemestral.setOnClickListener(this);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setView(content);
-            builder.setOnKeyListener((dialog, keyCode, event) -> {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    dismiss();
-                }
-                return false;
-            });
-            return builder.create();
-        }
-
-
-
-     public  void ConsultarPremium(final String urlws){
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, urlws, null,
-                response -> {
-                    try {
-                        String IdPremium = GeneralMethod.getRandomString();
-                        JSONArray lista = response.getJSONArray("pago");
-                        JSONObject json_data = lista.getJSONObject(0);
-                        mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Datos Personales").child("premium").setValue(IdPremium);
-                        mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Premium").child(IdPremium).setValue(json_data);
-
-                    } catch (JSONException ignored) {
-                    }
-                },
-                volleyError -> Toast.makeText(MainActivity.this, volleyError.toString(), Toast.LENGTH_LONG).show());
-        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 2, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        VolleySingleton.getIntanciaVolley(this.getActivity()).addToRequestQueue(jsonObjectRequest);
-    }
-
-        public void onClick(View v) {
-            Uri uri = null;
-            switch (v.getId()) {
-                case R.id.btnMensual: {
-                   // uri = Uri.parse("http://www.secsanluis.com.ar/servicios/varios/wimp/W_Premium.php?link=1");
-                    ConsultarPremium("http://www.secsanluis.com.ar/servicios/varios/wimp/W_Premium.php?link=1");
-                }break;
-                case R.id.btnTrimestral: {
-                    //uri = Uri.parse("http://www.secsanluis.com.ar/servicios/varios/wimp/W_Premium.php?link=2");
-                    ConsultarPremium("http://www.secsanluis.com.ar/servicios/varios/wimp/W_Premium.php?link=2");
-                }break;
-                case R.id.btnSemestral: {
-                    //uri = Uri.parse("http://www.secsanluis.com.ar/servicios/varios/wimp/W_Premium.php?link=3");
-                    ConsultarPremium("http://www.secsanluis.com.ar/servicios/varios/wimp/W_Premium.php?link=3");
-                }break;
-            }
-            /*Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(intent);*/
-        }
-    }
 
     private void instaciarPremium() {
-        PremiumDialog dialog = new PremiumDialog();  //Instanciamos la clase con el dialogo
-        dialog.setCancelable(false);
-        dialog.show(getFragmentManager(), "PREMIUM");// Mostramos el dialogo
+        DialogPremium dialogPremium = new DialogPremium();//Instanciamos la clase con el dialogo
+        /*Bundle bundlePremium = new Bundle();
+        bundlePremium.putSerializable("mDataBase", (Serializable) mDatabase);
+        bundlePremium.putSerializable("mUserFireBase", (Serializable) mUserFireBase);
+        dialogPremium.setArguments(bundlePremium);*/
+        dialogPremium.setCancelable(false);
+        dialogPremium.show(getFragmentManager(), "PREMIUM");// Mostramos el dialogo
     }
 
     // -------------------------------- Actualizar Datos De Perfil..........................................
@@ -1202,9 +1075,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "Email sent.");
-                            }
+                            if (task.isSuccessful()) { }
                         }
                     });
             // [END send_password_reset]
@@ -1216,9 +1087,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "User account deleted.");
-                            }
+                            if (task.isSuccessful()) { }
                         }
                     });
             // [END delete_user]
@@ -1249,9 +1118,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "User email address updated.");
-                            }
+                            if (task.isSuccessful()) { }
                         }
                     });
             // [END update_email]
