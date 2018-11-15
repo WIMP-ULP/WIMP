@@ -114,12 +114,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     //----------------------------------------CICLOS DE VIDA DE ACTIVITY-------------------------------------
 
-   private TextInputLayout correoText;
-   private TextInputLayout contraseñaText;
+    private TextInputLayout correoText;
+    private TextInputLayout contraseñaText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-correoText=findViewById(R.id.InputLayoutEmail);
-contraseñaText=findViewById(R.id.textInputLayoutPassword);
+        correoText=findViewById(R.id.InputLayoutEmail);
+        contraseñaText=findViewById(R.id.textInputLayoutPassword);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -174,8 +174,8 @@ contraseñaText=findViewById(R.id.textInputLayoutPassword);
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
-     //   ValidarLogin();
-       // LimpiarEditText();
+        //   ValidarLogin();
+        // LimpiarEditText();
         /*mEmailEditText.addTextChangedListener(new GeneralMethod.addListenerOnTextChange(this,mEmailEditText,String tipo));
         mPasswordEditText.addTextChangedListener(new GeneralMethod.addListenerOnTextChange(this,mPasswordEditText));*/
     }
@@ -186,7 +186,7 @@ contraseñaText=findViewById(R.id.textInputLayoutPassword);
         mAuthStateListener = firebaseAuth -> {
             mUserFireBase = firebaseAuth.getCurrentUser();
             if (mUserFireBase != null && LecturaDeTipoLogin().getTipoSignOut().equals("default")) {
-               InicioSesionCorrecto();
+                InicioSesionCorrecto();
             }
             /*else
                 GeneralMethod.showSnackback("El correo no se encuentra verificado, por favor verifique el correo",mContainerLogin,this);*/
@@ -242,7 +242,7 @@ contraseñaText=findViewById(R.id.textInputLayoutPassword);
     }
 
     private void ValidarLogin() {
-    mEmailEditTextLogin.addTextChangedListener(new TextWatcher() {
+        mEmailEditTextLogin.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -284,7 +284,7 @@ contraseñaText=findViewById(R.id.textInputLayoutPassword);
                 mMsgShowSnackBarEmailPassword = "Usuario o Contraseña incorrecto, por favor vuelva a ingresarlos.!",
                 mMsgShowSnackBarCurrentUser = "Cuenta no registrada, registra la cuenta o elija alguna de las opciones";
         final String mEmailStringEditTextLogin = mEmailEditTextLogin.getText().toString().trim(),
-                  mPasswordStringEditTextLogin = mPasswordEditTextLogin.getText().toString();
+                mPasswordStringEditTextLogin = mPasswordEditTextLogin.getText().toString();
         if(mFirebaseAuth != null){
             if (mUserFireBase != null) {
                 mUserFireBase.reload().addOnCompleteListener(task -> {
@@ -428,12 +428,12 @@ contraseñaText=findViewById(R.id.textInputLayoutPassword);
         final String mMsgShowSnackBar = "Todos los campos deben estar completos correctamente, por favor verifiquelos";
         switch (v.getId()) {
             case R.id.btnIniciarLogin: {
-             //   if (GeneralMethod.RegexLogin("correo", this) && GeneralMethod.RegexLogin("contrasenavacio", this)) {
-                   tipoDeLogin = "EmailPassword";
-                    LoginEmailPassword();
+                //   if (GeneralMethod.RegexLogin("correo", this) && GeneralMethod.RegexLogin("contrasenavacio", this)) {
+                tipoDeLogin = "EmailPassword";
+                LoginEmailPassword();
                 //}
                 //else
-                  //  GeneralMethod.showSnackback(mMsgShowSnackBar,mContainerLogin,LoginActivity.this);
+                //  GeneralMethod.showSnackback(mMsgShowSnackBar,mContainerLogin,LoginActivity.this);
             }
             break;
             case R.id.tvRegistrarseLogin: {

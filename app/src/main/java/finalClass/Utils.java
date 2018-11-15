@@ -38,6 +38,9 @@ public final class Utils {
     static final String REGEX_LETRAS = "^[a-zA-ZáÁéÉíÍóÓúÚñÑüÜ\\s]+$";
     static final String REGEX_EMAIL ="^[a-zA-Z0-9\\._-]+@[a-zA-Z0-9-]{2,}[.][a-zA-Z]{2,4}([.][a-zA-Z]{2,4})?$";
     static final String REGEX_PASSWORD = "^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{8,}$";
+    static final String Regex_LetrasNumeros= "^[a-zA0-9-ZáÁéÉíÍóÓúÚñÑüÜ\\s]+$";
+    static final String Regex_Numeros="^[0-9]+$";
+
     //STRING DE LOGUEO
     public static final String mFacebook = "facebook.com";
     public static final String mGoogle = "google.com";

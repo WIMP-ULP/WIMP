@@ -13,5 +13,18 @@ public class Tienda extends Marcadores {
         this.idPublicidad = idPublicidad;
         return this;
     }
+    public String getSitioWeb() {
+        return sitioWeb;
+    }
+
+    public Tienda setSitioWeb(String sitioWeb) {
+        this.sitioWeb = sitioWeb;
+        return this;
+    }
+
+
+
+
+
 
 }

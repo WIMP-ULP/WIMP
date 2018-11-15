@@ -19,6 +19,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -55,6 +57,10 @@ import finalClass.Utils;
 public class DialogMarkerShop extends DialogFragment implements View.OnClickListener {
     private LatLng mLatLng;
     private GoogleMap mGoogleMap;
+
+    ///TIENDA
+    private EditText mNombreTienda,mDescripcionTienda,mTelefonoTienda,mDireccionTienda;
+    private boolean RespuestaValidacion = false;
     //Componentes
     private EditText mNombreTiendaMarcador,mDescripcionTiendaMarcador,mTelefonoTiendaMarcador,mDireccionTiendaMarcador;
     private ImageView mFotoTiendaMarcador;
@@ -89,6 +95,9 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         mFotoTiendaMarcador = content.findViewById(R.id.imgMercado);
         mFotoTiendaMarcador.setOnClickListener(this);
         mUserFireBase = FirebaseAuth.getInstance().getCurrentUser();
+        mStorageReference = FirebaseStorage.getInstance().getReference();
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
 
@@ -111,7 +120,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
             }
             return false;
         });
-
+//ValidarCargaDeTienda(content);
         return builder.create();
     }
     private void CreateMarkers(LatLng latLng,GoogleMap googleMap, Tienda mMarcadorTienda) {
@@ -255,4 +264,75 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         })).addOnFailureListener(e -> { });
 
     }
+
+
+  /*  private Boolean ValidarCargaDeTienda(View view) {
+
+
+        mNombreTienda.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion =     GeneralMethod.RegexCargarMascota("nombre",view);
+
+            }
+        });
+        mDescripcionTienda.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion =   GeneralMethod.RegexCargarMascota("descripcion",view );
+            }
+        });
+        mTelefonoTienda.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion =  GeneralMethod.RegexCargarMascota("telefono", view);
+            }
+        });
+        mDireccionTienda.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion = GeneralMethod.RegexCargarMascota("direccion", view);
+            }
+        });
+        return RespuestaValidacion;
+    }
+*/
+
+
+
+
+
+
 }

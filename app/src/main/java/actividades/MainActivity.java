@@ -12,8 +12,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -33,7 +31,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatCallback;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -44,6 +41,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -86,7 +84,6 @@ import com.whereismypet.whereismypet.R;
 
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -130,7 +127,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     CircleImageView mImgFotoPerfil;
     private SharedPreferences sharedPreferences;
     static final int PETICION_PERMISO_LOCALIZACION = 0;
-    //FIREBASE
+
+    ///PUBLCIDAD
+    private EditText mTituloPulicidad,mDescripcionPublicidad,mPrecioPublicidad;
+
+
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mUserFireBase;
     private DatabaseReference mDatabase;
@@ -145,11 +146,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private ArrayList<Mascota>ListaMarcadoresMacota;
     private ArrayList<Tienda>ListaMarcadoresTienda;
-    private ArrayList<Comentario>ListaComentario;
     private ArrayList<Publicidad>ListaPublicidad;
 
    //private ArrayList<Mascota>ListaMascotaSiguiendo;
-    RecyclerView recyclerComentarios;
+
     RecyclerView recyclerPublicidad;
     RecyclerView recyclerFavoritos;
 
@@ -291,14 +291,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mUserPublic = dataSnapshot.getValue(Usuario.UsuarioPublico.class);
-                assert mUserPublic != null;
-
-                if (mUserFireBase.getProviderData().get(1).getProviderId().equals("password")){
-                    GeneralMethod.GlideUrl(MainActivity.this,mUserPublic.getImagen(),mImgFotoPerfil);
-                }
-                else {
-                    GeneralMethod.GlideUrl(MainActivity.this,Objects.requireNonNull(mUserFireBase.getPhotoUrl()).toString(),mImgFotoPerfil);
-                }
+                if (mUserFireBase.getProviderData().get(1).getProviderId().equals("password"))
+                    GeneralMethod.GlideUrl(MainActivity.this, mUserPublic.getImagen(), mImgFotoPerfil);
+                else
+                    GeneralMethod.GlideUrl(MainActivity.this, Objects.requireNonNull(mUserFireBase.getPhotoUrl()).toString(), mImgFotoPerfil);
             }
 
             @Override
@@ -306,7 +302,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             }
         });
+    }
 
+    private String getImageUrlUser(){
+        if (mUserFireBase.getProviderData().get(1).getProviderId().equals("password")){
+            return mUserPublic.getImagen();
+        }
+        else {
+           return Objects.requireNonNull(mUserFireBase.getPhotoUrl()).toString();
+        }
     }
     //----------------------------LocationListener----------------------------------
     @Override
@@ -392,12 +396,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
             }break;
             case R.id.nav_ajustes:{instaciarAjustes();}break;
+       //     case R.id.floatingIsPremium:{instaciarMisMascotasFavoritas();break;}
             case R.id.nav_colaboradores:{startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.oferta.educacion.ulp&hl=es")));}break;
             case R.id.nav_mascota:{instaciarMisMascotas();}break;
             case R.id.nav_premium:{instaciarPremium();}break;
             case R.id.nav_terminosycondiciones:{instaciarTerminos();}break;
             case R.id.nav_nosotros:{instaciarNosotros();}break;
             case R.id.nav_compartir:{startActivity(Intent.createChooser(new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, "https://wwww.facebook.com/wimp.ulp.5"), "COMPARTIR")); }break;
+
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -410,7 +416,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ListaMarcadoresTienda = new ArrayList<>();
         mListaMarcadoresMascotas = new HashMap<>();
         mListaMarcadoresTiendas = new HashMap<>();
-        ListaComentario = new ArrayList<>();
         ListaPublicidad=new ArrayList<>();
         mDatabase.child("Usuarios").addValueEventListener(new ValueEventListener() {
 
@@ -461,7 +466,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                     .setDireccion(Objects.requireNonNull(marker.get("direccion")).toString()));
                         }
                     }
-
                     if (keyUserShop != null) {
                         mListaMarcadoresTiendas.put(keyUserShop, ListaMarcadoresTienda);
                     }
@@ -532,7 +536,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private String LoadStyle(){
-
         return sharedPreferences.getString("estilo_mapa", "default");
     }
 
@@ -882,6 +885,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             builder.setView(content);
             builder.setOnKeyListener((dialog, keyCode, event) -> {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    ListaMisMascotas.clear();
                     dismiss();
                 }
                 return false;
@@ -894,25 +898,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Marcadores").child("Pet").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.i("Pet", dataSnapshot.toString());
-
                     for(DataSnapshot d:dataSnapshot.getChildren()){
-
                         Mascota mMascota = d.getValue(Mascota.class);
                         ListaMisMascotas.add(mMascota);
-
                     }
-
                     recyclerFavoritos = view.findViewById(R.id.RecViewFavoritos);
                     recyclerFavoritos.setLayoutManager(new LinearLayoutManager(view.getContext()));
                     AdaptadorMascota adapter = new AdaptadorMascota(ListaMisMascotas,view.getContext());
                     recyclerFavoritos.setAdapter(adapter);
-
                 }
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
         }
 
@@ -923,11 +919,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     //cuando llames al boton de fb, deves ahcer lo mismo pero asigandole a listaFavorito y setear el campo del dialogo  que dice mis mascotas,  a mis favoritos...
 
 
-
-
-
-
-
     private void instaciarMisMascotas() {
         MisMascotasDialog dialog = new MisMascotasDialog();  //Instanciamos la clase con el dialogo
         dialog.setCancelable(false);
@@ -935,23 +926,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public String ObtenerDireccion(Double lat, Double lng) {
-        List<Address> direcciones = null;
-        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        String address = null;
-        try {
-            direcciones = geocoder.getFromLocation(lat, lng, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert direcciones != null;
-        if (!direcciones.isEmpty()) {
-            Address DirCalle = direcciones.get(0);
-            address = DirCalle.getAddressLine(0);
-        }
-        return address;
-    }
+
 
     // ------------------------ DIALOG MIS TERMINOS-----------------------------------------
     @SuppressLint("ValidFragment")
@@ -1168,7 +1143,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         private void CargarDatosTienda(View view, Tienda mTienda) {
             final TextView eDireccionTienda = view.findViewById(R.id.eDireccionTienda),
-                    eNombreTienda = view.findViewById(R.id.eNombreMascota),
+                    eNombreTienda = view.findViewById(R.id.eNombreTienda),
                     eTelefonoTienda=view.findViewById(R.id.eTelefonoTienda);
 
             final CircleImageView imgTienda = view.findViewById(R.id.imgFotoTienda);
@@ -1177,7 +1152,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             eNombreTienda.setText(mTienda.getNombre());
             eTelefonoTienda.setText(mTienda.getTelefono());
             GeneralMethod.GlideUrl(this.getActivity(), mTienda.getImagen(),imgTienda);
-            CargarPublicidadesTienda(mTienda,view);
+
+            // CargarPublicidadesTienda(mTienda,view);
         }
 
         private void CargarPublicidadesTienda(Tienda mTienda,View view) {
@@ -1211,26 +1187,53 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
 
+    // ------------------------ DIALOG MIS MASCOTAS FAVORITAS-----------------------------------------
+   /* @SuppressLint("ValidFragment")
+    private class MisMascotasDialogFavoritos extends DialogFragment {
+        private ArrayList<Mascota>ListaMisMascotasFavoritas;
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View content = inflater.inflate(R.layout.dialog_my_favorites, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setView(content);
+            builder.setOnKeyListener((dialog, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    ListaMisMascotasFavoritas.clear();
+                    dismiss();
+                }
+                return false;
+            });
+            ListaMisMascotasFavoritas=new ArrayList<>();
+            CargarDatosMascotaRecyclerMisMascotasFavoritos(content);
+            return builder.create();
+        }
+        private void CargarDatosMascotaRecyclerMisMascotasFavoritos(View view) {
+            mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Marcadores").child("Shop").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot d:dataSnapshot.getChildren()){
+                        Mascota mMascota = d.getValue(Mascota.class);
+                        ListaMisMascotasFavoritas.add(mMascota);
+                    }
+                    recyclerFavoritos = view.findViewById(R.id.RecViewFavoritos2);
+                    recyclerFavoritos.setLayoutManager(new LinearLayoutManager(view.getContext()));
+                    AdaptadorMascota adapter = new AdaptadorMascota(ListaMisMascotasFavoritas,view.getContext());
+                    recyclerFavoritos.setAdapter(adapter);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
+        }
+    }
+///este metodo tiene que ver donde se  van a aguardar los favoritos  reccorrerlo, por eso salta el error en la line 1010
+    //cuando llames al boton de fb, deves ahcer lo mismo pero asigandole a listaFavorito y setear el campo del dialogo  que dice mis mascotas,  a mis favoritos...
+    private void instaciarMisMascotasFavoritas() {
+        MisMascotasDialogFavoritos dialog = new MisMascotasDialogFavoritos();  //Instanciamos la clase con el dialogo
+        dialog.setCancelable(false);
+        dialog.show(getFragmentManager(), "MIS_MASCOTAS");// Mostramos el dialogo
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }*/
 }
 

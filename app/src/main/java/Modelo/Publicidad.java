@@ -11,7 +11,6 @@ public class Publicidad {
     private String tituloOferta;
     private String precio;
     private String descripcionOferta;
-
     private String imgOferta;
 
     public void setIdPublicidad(String idPublicidad) {

@@ -17,25 +17,28 @@ import Modelo.PreferenciasLogin;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
+    private SharedPreferences mSharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         RelativeLayout Splash = findViewById(R.id.Splash);
 
         Animation animationSplash = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.transition);
         Splash.startAnimation(animationSplash);
 
+
         new Intent(getApplicationContext(),LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         new Handler().postDelayed(this::AutoLogin,2500);
     }
     private PreferenciasLogin LecturaDeTipoLogin(){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        return new PreferenciasLogin().setTipoSignOut(sharedPreferences.getString("type_sign_out", "default"))
-                .setRecordarUsuario(sharedPreferences.getBoolean("remember", true))
-                .setTipoSignIn(sharedPreferences.getString("type_sign_in", "default"));}
+        return new PreferenciasLogin().setTipoSignOut(mSharedPreferences.getString("type_sign_out", "default"))
+                .setRecordarUsuario(mSharedPreferences.getBoolean("remember", true))
+                .setTipoSignIn(mSharedPreferences.getString("type_sign_in", "default"));}
+
 
     private void AutoLogin(){
         String res = String.valueOf(LecturaDeTipoLogin().isRecordarUsuario());
@@ -62,6 +65,16 @@ public class SplashScreenActivity extends AppCompatActivity {
                 Loguearse();
                 break;
         }
+    }
+
+
+    private void ModoDeInicio(){
+        if(!LecturaDeTipoLogin().getTipoSignIn().equals("password"))
+            InicioSesion();
+        else if(LecturaDeTipoLogin().isRecordarUsuario())
+            InicioSesion();
+        else
+            Loguearse();
     }
     private void InicioSesion() {
         startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

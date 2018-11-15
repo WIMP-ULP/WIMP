@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -18,6 +19,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -50,6 +53,9 @@ import finalClass.Utils;
 
 @SuppressLint("ValidFragment")
 public class DialogMarkerPet extends DialogFragment implements View.OnClickListener{
+
+    ///MASCOTA
+    private boolean RespuestaValidacion = false;
     //Componentes
     private EditText mNombreMascotaMarcador,mDescripcionMascotaMarcador,mTelefonoMascotaMarcador;
     private CircleImageView mFotoMascotaMarcador;
@@ -101,6 +107,8 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                     .setLongitud(String.valueOf(latLng.longitude))
                     .setDireccion(/*GeneralMethod.ObtenerDireccion(latLng.latitude,latLng.longitude,this.getActivity())*/"DIRECCION DE MIERDA");
             RegistrarMarcadorDeMascota((Mascota) mMascota);
+            if(ValidarCargaDeMascota(content)){
+            RegistrarMarcadorDeMascota((Mascota) mMascota);}
         });
         builder.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -253,4 +261,51 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         }
     }
 
+    private Boolean ValidarCargaDeMascota(View view) {
+       /*mNombreMascotaMarcador.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion=   GeneralMethod.RegexCargarMascota("nombre",view);
+            }
+        });
+        mDescripcionMascotaMarcador.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion=   GeneralMethod.RegexCargarMascota("descripcion", view);
+            }
+        });
+        mTelefonoMascotaMarcador
+                .addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                RespuestaValidacion=  GeneralMethod.RegexCargarMascota("telefono", view);
+            }
+        });*/
+        return RespuestaValidacion;
+
+    }
 }

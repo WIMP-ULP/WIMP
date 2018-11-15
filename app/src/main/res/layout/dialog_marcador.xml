@@ -39,6 +39,7 @@
             app:layout_constraintTop_toBottomOf="@+id/eNombreMascota" />
 
         <include
+            android:id="@+id/include"
             layout="@layout/dialog_comentar_marcador_mascota"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -134,6 +135,22 @@
             app:srcCompat="@drawable/icono_corazon_sinreleno"
             tools:ignore="MissingConstraints" />
 
+        <ImageView
+            android:id="@+id/imgSinCompentarios"
+            android:layout_width="342dp"
+            android:layout_height="342dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="Favorito"
+            app:layout_constraintBottom_toBottomOf="@+id/include"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.546"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/RecViewComentario"
+            app:srcCompat="@drawable/ic_sincomentarios"
+            tools:ignore="MissingConstraints" />
     </android.support.constraint.ConstraintLayout>
 
 

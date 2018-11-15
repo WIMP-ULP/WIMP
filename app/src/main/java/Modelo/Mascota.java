@@ -11,6 +11,4 @@ public class Mascota extends Marcadores{
         this.estado = estado;
         return this;
     }
-
-
 }
