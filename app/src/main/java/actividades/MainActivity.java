@@ -5,9 +5,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -26,6 +28,7 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -109,6 +112,7 @@ import dialogsFragments.DialogPremium;
 import dialogsFragments.DialogShowPet;
 import finalClass.GeneralMethod;
 import finalClass.Utils;
+import servicios.Notificacion;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -128,6 +132,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private SharedPreferences sharedPreferences;
     static final int PETICION_PERMISO_LOCALIZACION = 0;
 
+
+    // BROADCAST
+    public static final String NOTIFICACION="NOTIFICACION";
+
+    private BroadcastReceiver broadcastReceiverNotificacion;
     ///PUBLCIDAD
     private EditText mTituloPulicidad,mDescripcionPublicidad,mPrecioPublicidad;
 
@@ -156,9 +165,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private Map<String,ArrayList<Mascota>> mListaMarcadoresMascotas;
     private Map<String,ArrayList<Tienda>> mListaMarcadoresTiendas;
     private boolean fabExpanded = false;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverNotificacion);
+    }
+
+    @Override
+    protected void onResume() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverNotificacion, new IntentFilter(NOTIFICACION));
+        super.onResume();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final Notificacion[] notificacion = new Notificacion[1];
+        broadcastReceiverNotificacion=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+              // notificacion[0] =new Notificacion(context);
+
+            }
+        };
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         requestWindowFeature(Window.FEATURE_NO_TITLE);

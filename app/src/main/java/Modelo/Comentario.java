@@ -6,6 +6,13 @@ package Modelo;
 
 public class Comentario {
     private String receptorID;
+    private String emisorID;
+    private String urlFoto;
+    private String fechaHora;
+    private String idComentario;
+    private String idMarcador;
+    private String cuerpo;
+
 
     public Comentario setReceptorID(String reseptorID) {
         this.receptorID = reseptorID;
@@ -17,12 +24,6 @@ public class Comentario {
         return receptorID;
     }
 
-    private String emisorID;
-    private String urlFoto;
-    private String fechaHora;
-    private String idComentario;
-    private String idMarcador;
-    private String cuerpo;
 
 
 

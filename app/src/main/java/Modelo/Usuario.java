@@ -152,53 +152,5 @@ public class Usuario {
         }
     }
 
-    public static class Premium{
-        private String idUsuario;
-        private String fechaInicio;
-        private String fechaFin;
-        private String estado;
-
-
-        public String getIdUsuario() {
-            return idUsuario;
-        }
-
-        public Premium setIdUsuario(String idUsuario) {
-            this.idUsuario = idUsuario;
-            return this;
-        }
-
-
-        public String getFechaInicio() {
-            return fechaInicio;
-        }
-
-        public Premium setFechaInicio(String fechaInicio) {
-            this.fechaInicio = fechaInicio;
-            return this;
-        }
-
-        public String getFechaFin() {
-            return fechaFin;
-        }
-
-        public Premium setFechaFin(String fechaFin) {
-            this.fechaFin = fechaFin;
-            return Usuario.Premium.this;
-        }
-
-        public String getEstado() {
-            return estado;
-        }
-
-        public Premium setEstado(String estado) {
-            this.estado = estado;
-            return Usuario.Premium.this;
-        }
-
-        public boolean isExpired(){
-            return new Date().after(new SimpleDateFormat().parse(fechaInicio,new ParsePosition(0)));
-        }
-    }
 
 }
