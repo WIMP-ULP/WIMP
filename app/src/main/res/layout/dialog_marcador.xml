@@ -123,16 +123,16 @@
 
         </android.support.v7.widget.RecyclerView>
 
-        <ImageView
-            android:id="@+id/imageView6"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgFavoritos"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="30dp"
             android:layout_marginEnd="30dp"
-            android:contentDescription="Favorito"
+            android:contentDescription="@string/favorito"
+            android:background="@drawable/icono_corazon_sinreleno"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/icono_corazon_sinreleno"
             tools:ignore="MissingConstraints" />
 
         <ImageView

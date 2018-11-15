@@ -33,5 +33,26 @@ public class Marcadores {
     public String getDireccion() { return direccion; }
 
 
+    public static class Favoritos {
 
+        private String idFavoritos;
+        private String idUsuarioSeguidor;
+        private String idMarcadorSeguido;
+        private String fechaSeguir;
+
+        public String getIdFavoritos() { return idFavoritos; }
+        public String getIdUsuarioSeguidor() { return idUsuarioSeguidor; }
+        public String getIdMarcadorSeguido() { return idMarcadorSeguido; }
+        public String getFechaSeguir() { return fechaSeguir; }
+
+
+        public Favoritos setIdFavoritos(String idFavoritos) { this.idFavoritos = idFavoritos; return this;}
+        public Favoritos setIdUsuarioSeguidor(String idUsuarioSeguidor) { this.idUsuarioSeguidor = idUsuarioSeguidor;return this; }
+        public Favoritos setIdMarcadorSeguido(String idMarcadorSeguido) { this.idMarcadorSeguido = idMarcadorSeguido;return this; }
+        public Favoritos setFechaSeguir(String fechaSeguir) { this.fechaSeguir = fechaSeguir;return this; }
+
+
+
+
+    }
 }
