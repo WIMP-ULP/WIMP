@@ -89,7 +89,7 @@ public class Usuario {
 
         public Premium setFechaFin(String fechaFin) {
             this.fechaFin = fechaFin;
-            return Usuario.Premium.this;
+            return this;
         }
 
         public String getEstado() {
@@ -98,16 +98,13 @@ public class Usuario {
 
         public Premium setEstado(String estado) {
             this.estado = estado;
-            return Usuario.Premium.this;
+            return this;
         }
 
         public boolean isExpired(){
             return new Date().after(new SimpleDateFormat().parse(fechaInicio,new ParsePosition(0)));
         }
     }
-
-
-
 
     public static class UsuarioPublico{
         private String nombre;
@@ -151,6 +148,4 @@ public class Usuario {
             return this;
         }
     }
-
-
 }

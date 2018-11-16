@@ -125,7 +125,6 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
     }
     private void CreateMarkers(LatLng latLng,GoogleMap googleMap, Tienda mMarcadorTienda) {
         googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(DialogMarkerShop.this.getActivity().getApplicationContext()), mMarcadorTienda, DialogMarkerShop.this.getActivity()));
-
         googleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(String.valueOf(mMarcadorTienda.getNombre()))

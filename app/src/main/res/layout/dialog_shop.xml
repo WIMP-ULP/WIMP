@@ -20,7 +20,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="30dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/tienda"
+            android:src="@drawable/icon_shop_color"
             app:civ_border_color="#FFFFFF"
             app:civ_border_width="2dp"
             app:layout_constraintEnd_toEndOf="parent"

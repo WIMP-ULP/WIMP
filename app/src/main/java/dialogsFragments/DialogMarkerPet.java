@@ -51,6 +51,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import finalClass.GeneralMethod;
 import finalClass.Utils;
 
+import static com.whereismypet.whereismypet.R.drawable.corazon_rojo;
+
 @SuppressLint("ValidFragment")
 public class DialogMarkerPet extends DialogFragment implements View.OnClickListener{
 
@@ -58,7 +60,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
     private boolean RespuestaValidacion = false;
     //Componentes
     private EditText mNombreMascotaMarcador,mDescripcionMascotaMarcador,mTelefonoMascotaMarcador;
-    private CircleImageView mFotoMascotaMarcador;
+    private CircleImageView mFotoMascotaMarcador, mFavorito,mFavoritosRojo;
     private String tipoDeFoto = "VACIO";
     //Firebase
     private FirebaseUser mUserFireBase;
@@ -91,6 +93,10 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
         mTelefonoMascotaMarcador=content.findViewById(R.id.input_telefono);
         mFotoMascotaMarcador = content.findViewById(R.id.imgMascota);
         mFotoMascotaMarcador.setOnClickListener(this);
+        mFavorito = content.findViewById(R.id.imgFavoritos);
+    //    mFavorito.setOnClickListener(this);
+        mFavoritosRojo=content.findViewById(R.id.imgfavoritoRojo);
+      //  mFavoritosRojo.setOnClickListener(this);
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mUserFireBase = FirebaseAuth.getInstance().getCurrentUser();
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -136,8 +142,29 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                     mostrarDialogOpciones();
                 }
             }break;
+            case R.id.imgFavoritos:{
+
+            }break;
+            case R.id.imgfavoritoRojo:{
+
+            }
         }
     }
+
+ /*   private void ocultarCorazonRojo() {
+        mFavorito.setVisibility(View.INVISIBLE);
+        mFavoritosRojo.setVisibility(View.VISIBLE);
+    }
+
+    private void mostrarCorazonRojo() {
+
+       // FirebaseMessaging.getInstance().subscribeToTopic()
+        mFavorito.setVisibility(View.VISIBLE);
+        mFavoritosRojo.setVisibility(View.INVISIBLE);
+    }
+
+*/
+
     private void RegistrarMarcadorDeMascota(Mascota mMascota){
         progressDialog = new ProgressDialog(this.getActivity());
         progressDialog.setMessage("Registrando mascota perdida...");

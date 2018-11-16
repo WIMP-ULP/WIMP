@@ -97,6 +97,7 @@ import java.util.Objects;
 
 
 import Modelo.Comentario;
+import Modelo.CustomInfoWindowAdapter;
 import Modelo.Marcadores;
 import Modelo.PreferenciasLogin;
 import Modelo.Publicidad;
@@ -513,6 +514,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void CargarMarcadoresMascota(final Mascota myMarker){
+        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(this.getApplicationContext()), myMarker, this));
+
         googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(Double.valueOf(myMarker.getLatitud()),Double.valueOf(myMarker.getLongitud())))
                 .title(String.valueOf(myMarker.getIdMarcador()))
@@ -521,6 +524,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.pet_markers)));
     }
     private void CargarMarcadoresTienda(final Tienda myMarker){
+        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(this.getApplicationContext()), myMarker,this));
         googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(Double.valueOf(myMarker.getLatitud()),Double.valueOf(myMarker.getLongitud())))
                 .title(String.valueOf(myMarker.getIdMarcador()))
@@ -873,16 +877,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     break;
                 }
                 case R.id.swEstiloGoogle: {
-                    if(swgoogle.isChecked())
-                    {
+                    if(swgoogle.isChecked()) {
                         imagen1.setVisibility(View.INVISIBLE);
                         imagen2.setVisibility(View.INVISIBLE);
                         imagen3.setVisibility(View.INVISIBLE);
                         imagen4.setVisibility(View.INVISIBLE);
                         SaveStyle("default");
                         googleMap.setMapStyle(new MapStyleOptions("º"));
-                    }
-                        break;
+                    }break;
                 }
             }
         }
@@ -969,12 +971,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setView(content);
-            builder.setNegativeButton("cerrar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
+            builder.setNegativeButton("cerrar", (dialog, id) -> dialog.dismiss());
             return builder.create();
         }
     }
@@ -996,12 +993,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setView(content);
-            builder.setNegativeButton("cerrar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
+            builder.setNegativeButton("cerrar", (dialog, id) -> dialog.dismiss());
             return builder.create();
         }
     }
@@ -1056,7 +1048,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     apellidoActualizar = view.findViewById(R.id.apellidoActualizar),
                     emailActualziar = view.findViewById(R.id.emailActualizar);
             final CircleImageView imgActualizar = view.findViewById(R.id.imgPerfilDBActualizar);
-
             if (mUserFireBase.getProviderData().get(1).getProviderId().equals("password")) {
                 nombreActualizar.setText(mUserPublic.getNombre());
                 apellidoActualizar.setText(mUserPublic.getApellido());

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="40dp"
     android:background="@drawable/gradient_login">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -20,24 +20,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
         android:layout_toEndOf="@id/imgMarcadorMascota"
         android:text="sdasfsdfdsfdsf"
         android:textColor="#fff"
         app:layout_constraintStart_toEndOf="@+id/imgMarcadorMascota"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvDescrpcionMarcador"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvNombreMarcador"
-        android:layout_marginStart="8dp"
-        android:layout_toEndOf="@id/imgMarcadorMascota"
-        android:text="sasdadasdasd"
-        android:textColor="#fff"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/imgMarcadorMascota"
-        app:layout_constraintTop_toBottomOf="@+id/tvNombreMarcador" />
 </android.support.constraint.ConstraintLayout>

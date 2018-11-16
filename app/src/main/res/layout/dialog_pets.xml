@@ -100,8 +100,6 @@
                 android:textColorHint="@android:color/white" />
 
 
-
-
         </LinearLayout>
     </RelativeLayout>
 
