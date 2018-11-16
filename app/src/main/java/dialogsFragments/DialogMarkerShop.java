@@ -170,7 +170,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
                 } break;
             }
         } else {
-            mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeResource(getResources(),R.drawable.tienda)));
+            mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeResource(getResources(),R.drawable.com_facebook_profile_picture_blank_square)));
         }
     }
 
