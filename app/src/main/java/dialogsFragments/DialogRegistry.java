@@ -193,6 +193,7 @@ public class DialogRegistry extends DialogFragment implements View.OnClickListen
     private void SubirRealtimeDatabase(final Usuario.UsuarioPublico mUserPublic){
         mDatabase.child("Usuarios").child(mUserPublic.getIdUsuario()).child("Datos Personales").setValue(mUserPublic);
         progressDialog.dismiss();
+
     }
     public void storageIMG (final Usuario.UsuarioPublico mUserPublic) {
         final StorageReference mStorageImgPerfilUsuario =  mStorageReference.child("Imagenes").child("Perfil").child(GeneralMethod.getRandomString());

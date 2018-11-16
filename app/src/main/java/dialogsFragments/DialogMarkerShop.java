@@ -124,7 +124,9 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         return builder.create();
     }
     private void CreateMarkers(LatLng latLng,GoogleMap googleMap, Tienda mMarcadorTienda) {
-        googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(DialogMarkerShop.this.getActivity().getApplicationContext()), mMarcadorTienda, DialogMarkerShop.this.getActivity()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(this.getContext().getApplicationContext()), mMarcadorTienda, this.getActivity()));
+        }
         googleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(String.valueOf(mMarcadorTienda.getNombre()))
@@ -168,7 +170,7 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
                 } break;
             }
         } else {
-            mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeResource(getResources(),R.drawable.com_facebook_profile_picture_blank_square)));
+            mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeResource(getResources(),R.drawable.tienda)));
         }
     }
 

@@ -136,11 +136,13 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
 
     private void CargarDatosMascota(View view) {
         final TextView eDescripcionMascota = view.findViewById(R.id.eDescripcionMascota),
-                eNombreMascota = view.findViewById(R.id.eNombreMascota);
-        final CircleImageView imgMascota = view.findViewById(R.id.imgFotomascota);
+                eNombreMascota = view.findViewById(R.id.eNombreMascota),
+                eTelefonoMascota=view .findViewById(R.id.eTelefonoMascota);
 
+        final CircleImageView imgMascota = view.findViewById(R.id.imgFotomascota);
         eDescripcionMascota.setText(mDatosMascotas.getDescripcion());
         eNombreMascota.setText(mDatosMascotas.getNombre());
+        eTelefonoMascota.setText(mDatosMascotas.getTelefono());
         GeneralMethod.GlideUrl(this.getActivity(), mDatosMascotas.getImagen(),imgMascota);
         CargarComentariosMascota(view);
     }

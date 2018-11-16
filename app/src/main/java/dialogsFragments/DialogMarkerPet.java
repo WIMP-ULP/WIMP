@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -126,7 +127,10 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
     }
 
     private void CreateMarkers(LatLng latLng,GoogleMap googleMap, Mascota mMarcadorMascota) {
-       googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(DialogMarkerPet.this.getActivity().getApplicationContext()), mMarcadorMascota, DialogMarkerPet.this.getActivity()));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(this.getContext().getApplicationContext()), mMarcadorMascota, this.getActivity()));
+        }
         googleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(String.valueOf(mMarcadorMascota.getIdMarcador()))

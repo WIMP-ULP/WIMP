@@ -18,6 +18,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -437,6 +439,14 @@ public final class GeneralMethod {
     private static boolean CheckEditTextIsEmptyOrNot(EditText editText){
         return (TextUtils.isEmpty(editText.getText().toString().trim()));
     }
+
+
+    public static boolean isConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected();
+    }
+
 
     //--------------------------CLASE TEXT WATCHER-------------------------------------------------------------
     public static class AddListenerOnTextChange implements TextWatcher {

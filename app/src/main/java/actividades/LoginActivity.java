@@ -58,6 +58,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -173,7 +174,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //   ValidarLogin();
         // LimpiarEditText();
         /*mEmailEditText.addTextChangedListener(new GeneralMethod.addListenerOnTextChange(this,mEmailEditText,String tipo));
-        mPasswordEditText.addTextChangedListener(new GeneralMethod.addListenerOnTextChange(this,mPasswordEditText));*/
+        mPasswordEditText.addTextChangedListener(new GeneralMethod.addListenerOnTextChange(this,mPasswordEditText));
+        if (mUserFireBase.getProviderData().get(1).getProviderId().equals("password")) {
+        mDatabase.child("Usuarios").child(mUserPublic.getIdUsuario()).child("Datos Personales").setValue(mUserPublic);
+    }
+        else
+                mDatabase.child("Usuarios").child(mUserFireBase.getUid()).child("Datos Personales").setValue(new Usuario().setEmail(mUserFireBase.getEmail()));
+        progressDialog.dismiss();
+        */
     }
 
     //--------------------------------------ESCUCHADOR DE AUTENTICACION, POR SI CAMBIA DE LOGUEO------------------------------------
@@ -218,10 +226,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
     //-------------------------------------------METODO DE CAMBIO DE ACTIVITY A LA PRINCIPAL----------------------------------
     public void InicioSesionCorrecto() {
-        Intent i = new Intent(this, MainActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+        startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         finish();
     }
     //-------------------------------------------METODOS QUE VACIO LOS MENSAJES Y DATOS DE LOS COMPONENTES Y OTRO LLAMO A LAS VALIDACIONES CUANDO CAMBIA EL TEXT DEL EDITTEXT----------------------------------
@@ -319,6 +324,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             InicioSesionCorrecto();
+                            FirebaseDatabase.getInstance().getReference().child("Usuarios").child(mUserFireBase.getUid()).child("Datos Personales").setValue(new Usuario.UsuarioProveedores()
+                            .setIdUsuario(mUserFireBase.getUid())
+                            .setEmail(mUserFireBase.getEmail())
+                            .setNombreUsuario(mUserFireBase.getDisplayName())
+                            .setImagen(mUserFireBase.getPhotoUrl().toString()));
+
                             GeneralMethod.showSnackback("Bienvenido a WIMP?",mContainerLogin,LoginActivity.this);
 
                         } else {
@@ -369,14 +380,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void handleFacebookAccessToken(AccessToken token) {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mFirebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        InicioSesionCorrecto();
-                    } else
-                        Toast.makeText(LoginActivity.this, R.string.auth_failed, LENGTH_SHORT).show();
-
-                });
+        mFirebaseAuth.signInWithCredential(credential).addOnSuccessListener(authResult -> {
+            InicioSesionCorrecto();
+            FirebaseDatabase.getInstance().getReference().child("Usuarios").child(mUserFireBase.getUid()).child("Datos Personales").setValue(new Usuario.UsuarioProveedores()
+                    .setIdUsuario(mUserFireBase.getUid())
+                    .setEmail(mUserFireBase.getEmail())
+                    .setNombreUsuario(mUserFireBase.getDisplayName())
+                    .setImagen(mUserFireBase.getPhotoUrl().toString()));
+        });
     }
 
     //---------------------------------------CAPTURO EL RESULTADO DE LA ACTIVIDAD LUEGO DE LOGUEARSE CON LAS REDES------------------------------------------------------------------

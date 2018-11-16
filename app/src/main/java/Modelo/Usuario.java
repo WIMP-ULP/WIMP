@@ -9,41 +9,49 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Usuario {
-
-
     private String idUsuario;
     private String email;
     private String contraseña;
-
-
 
     public String getIdUsuario() {
         return idUsuario;
     }
 
-    public Usuario setIdUsuario(String idUsuario) {
-        this.idUsuario = idUsuario;
-        return this;
-    }
-
-
+    public Usuario setIdUsuario(String idUsuario) { this.idUsuario = idUsuario;return this; }
 
     public String getContraseña() {
         return contraseña;
     }
 
-    public Usuario setContraseña(String contraseña) {
-        this.contraseña = contraseña;
-        return this;
-    }
+    public Usuario setContraseña(String contraseña) { this.contraseña = contraseña;return this; }
 
     public String getEmail() {
         return email;
     }
 
-    public Usuario setEmail(String email) {
-        this.email = email;
-        return this;
+    public Usuario setEmail(String email) { this.email = email;return this; }
+
+    public static class UsuarioProveedores{
+        private String idUsuario;
+        private String nombreUsuario;
+        private String email;
+        private String imagen;
+
+        public String getIdUsuario() { return idUsuario; }
+
+        public UsuarioProveedores setIdUsuario(String idUsuario) { this.idUsuario = idUsuario;return this; }
+
+        public String getNombreUsuario() { return nombreUsuario; }
+
+        public UsuarioProveedores setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario;return this; }
+
+        public String getEmail() { return email; }
+
+        public UsuarioProveedores setEmail(String email) { this.email = email;return this; }
+
+        public String getImagen() { return imagen; }
+
+        public UsuarioProveedores setImagen(String imagen) { this.imagen = imagen;return this; }
     }
 
     public static class Premium{
