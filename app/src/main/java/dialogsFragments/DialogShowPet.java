@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -50,6 +53,9 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
     private RecyclerView mRecyclerComentarios;
     private DatabaseReference mDatabase;
     private FirebaseUser mUserFireBase;
+    boolean click = false;
+    private FloatingActionButton fabComentar;
+
 
 
     public DialogShowPet(Mascota mDatosMascotas){
@@ -66,8 +72,10 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
         mListaComentario = new ArrayList<>();
         eComentario = content.findViewById(R.id.eComentarMarcador);
         mImgFavoritos = content.findViewById(R.id.imgFavoritos);
+        fabComentar = content.findViewById(R.id.fabComentar);
         eComentario.setOnClickListener(this);
         mImgFavoritos.setOnClickListener(this);
+        fabComentar.setOnClickListener(this);
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
         builder.setOnKeyListener((dialog, keyCode, event) -> {
@@ -92,6 +100,7 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
                     }
                 }}break;
             case R.id.imgFavoritos: {
+                mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.corazon_rojo));
                 mDatabase.child("Usuarios").child(mUserFireBase.getUid()).child("Marcadores").child("Favoritos").setValue(
                         new Marcadores.Favoritos()
                         .setIdFavoritos(GeneralMethod.getRandomString())
@@ -101,14 +110,25 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
                 FirebaseMessaging.getInstance().subscribeToTopic(mDatosMascotas.getIdMarcador());
                 }break;
             case R.id.fabComentar:{
-                Comentario mComentario = new Comentario()
-                        .setIdComentario(GeneralMethod.getRandomString())
-                        .setEmisorID(mUserFireBase.getUid())
-                        .setFechaHora(new Date().toString())
-                        .setCuerpo(eComentario.getText().toString())
-                        .setReceptorID(mDatosMascotas.getIdUsuario())
-                        .setUrlFoto(Objects.requireNonNull(mUserFireBase.getPhotoUrl()).toString());
-                mDatabase.child(mUserFireBase.getUid()).child("Mascadores").child("pet").child(mComentario.getIdComentario()).setValue(mComentario);
+                    click = !click;
+                    mListaComentario.clear();
+                    Comentario mComentario = new Comentario()
+                            .setReceptorID(mDatosMascotas.getIdUsuario())
+                            .setEmisorID(mUserFireBase.getUid())
+                            .setCuerpo(eComentario.getText().toString())
+                            .setUrlFoto(mUserFireBase.getPhotoUrl().toString())
+                            .setFechaHora(new Date().toString())
+                            .setIdComentario(GeneralMethod.getRandomString())
+                            .setIdMarcador(mDatosMascotas.getIdMarcador());
+                    mDatabase.child("Usuarios").child(mComentario.getReceptorID()).child("Marcadores").child("Comentarios").child(mComentario.getIdComentario()).setValue(mComentario);
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                        Interpolator interpolador = AnimationUtils.loadInterpolator(this.getActivity().getBaseContext(),
+                                android.R.interpolator.fast_out_slow_in);
+                        v.animate()
+                                .rotation(click ? 45f : 0)
+                                .setInterpolator(interpolador)
+                                .start();
+                    }
             }
         }
 
@@ -144,4 +164,6 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
+
+
 }

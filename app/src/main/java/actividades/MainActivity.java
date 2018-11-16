@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         /*layoutFabPet = findViewById(R.id.layoutFabPet);
         layoutFabShop = findViewById(R.id.layoutFabShop);
         */
-        ObtenerDatosPerfil();
+        //ObtenerDatosPerfil();
 
         Escuchador();
 
@@ -306,7 +306,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void VolverAlLogin(final String cerrar_sesion) {
-
         GuardarTipoDeLogin(new PreferenciasLogin().setTipoSignOut(cerrar_sesion).setRecordarUsuario(false));
         Intent i = new Intent(this, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -425,6 +424,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     default:
                         break;
                 }
+
+                
             }break;
             case R.id.nav_ajustes:{instaciarAjustes();}break;
        //     case R.id.floatingIsPremium:{instaciarMisMascotasFavoritas();break;}
@@ -576,7 +577,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void GuardarTipoDeLogin(final PreferenciasLogin cerrar_sesion){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("type_sign_out",cerrar_sesion.getTipoSignOut());
-        editor.putString("type_sign_in",cerrar_sesion.getTipoSignOut());
         editor.putBoolean("remember",cerrar_sesion.isRecordarUsuario());
         editor.apply();
     }
@@ -1129,6 +1129,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // -------------------------------- Mostrar datos de masctota..........................................
     private void instaciarDialogoMostrarMarcadorMascota(Mascota mDatosMascota) {
         DialogShowPet dialog = new DialogShowPet(mDatosMascota);  //Instanciamos la clase con el dialogo
+
         dialog.setCancelable(false);
         dialog.show(getFragmentManager(), "MASCOTA");// Mostramos el dialogo
     }

@@ -91,7 +91,6 @@ import static android.widget.Toast.LENGTH_SHORT;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     private EditText mEmailEditTextLogin, mPasswordEditTextLogin;
-    private String tipoDeLogin;
     private ConstraintLayout mContainerLogin;
     private CheckBox mRecordarUsuarioCheckBox;
     //FIREBASE-----
@@ -104,18 +103,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     //GOOGLE------
     private GoogleSignInClient mGoogleSignInClient;
 
-    //Imagen
-    private String tipoDeFoto = "VACIO";
-    private Uri mFotoPerfilRegistro;
-    private ImageView mImgPerfilDBRegistroImageView;
-
     //Preferencias
     private SharedPreferences sharedPreferences;
+    private PreferenciasLogin mPreferenciasLogin;
 
-    //----------------------------------------CICLOS DE VIDA DE ACTIVITY-------------------------------------
 
     private TextInputLayout correoText;
     private TextInputLayout contraseñaText;
+    //----------------------------------------CICLOS DE VIDA DE ACTIVITY-------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         correoText=findViewById(R.id.InputLayoutEmail);
@@ -131,7 +126,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //Metodos de Login
         LoginGoogle();
         EscuchandoEstadoDeAutenticacion();
-
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mPreferenciasLogin = new PreferenciasLogin();
         //Inicializar las vistas
         final CardView mIniciarCardView = findViewById(R.id.btnIniciarLogin);
         final TextView mRegistroTextView = findViewById(R.id.tvRegistrarseLogin);
@@ -185,7 +181,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mAuthStateListener = firebaseAuth -> {
             mUserFireBase = firebaseAuth.getCurrentUser();
-            if (mUserFireBase != null && LecturaDeTipoLogin().getTipoSignOut().equals("default")) {
+            if (mUserFireBase != null && LecturaLogin().getTipoSignOut().equals("default")) {
                 InicioSesionCorrecto();
             }
             /*else
@@ -193,22 +189,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         };
     }
     //-------------------------------------------PREFERENCIAS------------------------------------------------------------------
-    private PreferenciasLogin LecturaDeTipoLogin(){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    private PreferenciasLogin LecturaLogin(){
         return new PreferenciasLogin().setTipoSignOut(sharedPreferences.getString("type_sign_out", "default"))
                 .setRecordarUsuario(sharedPreferences.getBoolean("remember", true))
                 .setTipoSignIn(sharedPreferences.getString("type_sign_in", "default"));
-
-    }
-    private PreferenciasLogin LoadRememver (){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        return new PreferenciasLogin().setRecordarUsuario(sharedPreferences.getBoolean("remember", true));
     }
 
-    private void GuardarRemember(final boolean remember){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    private void GuardarSignIn(final PreferenciasLogin signIn){
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("remember",remember);
+        editor.putString("type_sign_in",signIn.getTipoSignIn());
+        editor.putString("type_sign_out",signIn.getTipoSignOut());
+        editor.putBoolean("remember",signIn.isRecordarUsuario());
         editor.apply();
     }
 
@@ -255,8 +246,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void afterTextChanged(Editable s) {
                 GeneralMethod.RegexLogin("correo", LoginActivity.this);
                 GeneralMethod.RegexLogin("correovacio", LoginActivity.this);
-
-
             }
         });
         mPasswordEditTextLogin.addTextChangedListener(new TextWatcher() {
@@ -273,11 +262,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 GeneralMethod.RegexLogin("contrasenavacio", LoginActivity.this);
             }
         });
-
     }
-
-
-
     //---------------------------------------FIREBASE EMAIL---------------------------------------------------
     private void LoginEmailPassword() {
         final String mMsgShowSnackBarVerificado = "El correo no se encuentra verificado, por favor verifique el correo",
@@ -398,12 +383,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (tipoDeLogin) {
-            case "Facebook": {
+        switch (mPreferenciasLogin.getTipoSignIn()) {
+            case "facebook": {
                 callbackManager.onActivityResult(requestCode, resultCode, data);
             }
             break;
-            case "Google": {
+            case "google": {
                 if (requestCode == Utils.RC_SIGN_IN) {
                     GoogleSignInResult mGoogleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                     // Google Sign In was successful, authenticate with Firebase
@@ -429,7 +414,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.btnIniciarLogin: {
                 //   if (GeneralMethod.RegexLogin("correo", this) && GeneralMethod.RegexLogin("contrasenavacio", this)) {
-                tipoDeLogin = "EmailPassword";
+                mPreferenciasLogin.setTipoSignIn("password").setRecordarUsuario(mRecordarUsuarioCheckBox.isChecked());
+                mPreferenciasLogin.setTipoSignOut("default");
+                GuardarSignIn(mPreferenciasLogin);
                 LoginEmailPassword();
                 //}
                 //else
@@ -441,16 +428,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
             break;
             case R.id.login_button: {
-                tipoDeLogin = "Facebook";
+                mPreferenciasLogin.setTipoSignIn("facebook");
+                mPreferenciasLogin.setTipoSignOut("default");
+                GuardarSignIn(mPreferenciasLogin);
                 LoginFacebook();
             }
             break;
             case R.id.sign_in_button: {
-                tipoDeLogin = "Google";
+                mPreferenciasLogin.setTipoSignIn("google");
+                mPreferenciasLogin.setTipoSignOut("default");
+                GuardarSignIn(mPreferenciasLogin);
                 signIn();
-            }
-            case R.id.RecordarSesion:{
-                GuardarRemember(mRecordarUsuarioCheckBox.isChecked());
             }
             break;
             default:

@@ -26,11 +26,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         RelativeLayout Splash = findViewById(R.id.Splash);
-
         Animation animationSplash = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.transition);
         Splash.startAnimation(animationSplash);
-
-
         new Intent(getApplicationContext(),LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         new Handler().postDelayed(this::AutoLogin,2500);
     }
@@ -41,47 +38,25 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 
     private void AutoLogin(){
-        String res = String.valueOf(LecturaDeTipoLogin().isRecordarUsuario());
-        switch (LecturaDeTipoLogin().getTipoSignIn())
-        {
-            case "password":
-                switch (res) {
-                    case "true": {
-                        InicioSesion();
-                    }
-                    break;
-                    case "false": {
-                        Loguearse();
-                    }break;
-                }
-                break;
-            case"facebook":
-                InicioSesion();
-                break;
-            case "google":
-                InicioSesion();
-                break;
-            default:
-                Loguearse();
-                break;
+        String as = LecturaDeTipoLogin().getTipoSignIn();
+        String sa = LecturaDeTipoLogin().getTipoSignOut();
+        if(!LecturaDeTipoLogin().getTipoSignIn().equals("default")){
+            if(!LecturaDeTipoLogin().getTipoSignOut().equals("default")){
+               Loguearse();
+            }
+            else{ InicioSesion(); }
         }
-    }
+       else{ Loguearse();}
 
 
-    private void ModoDeInicio(){
-        if(!LecturaDeTipoLogin().getTipoSignIn().equals("password"))
-            InicioSesion();
-        else if(LecturaDeTipoLogin().isRecordarUsuario())
-            InicioSesion();
-        else
-            Loguearse();
     }
+
     private void InicioSesion() {
         startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         finish();
     }
     private void Loguearse() {
-        SplashScreenActivity.this.startActivity(new Intent(SplashScreenActivity.this,LoginActivity.class));
-        SplashScreenActivity.this.finish();
+        startActivity(new Intent(SplashScreenActivity.this,LoginActivity.class));
+        finish();
     }
 }

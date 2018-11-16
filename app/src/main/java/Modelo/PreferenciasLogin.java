@@ -3,6 +3,8 @@ package Modelo;
 public class PreferenciasLogin {
     private String tipoSignOut;
     private String tipoSignIn;
+    private boolean recordarUsuario;
+
     public String getTipoSignIn() {
         return tipoSignIn;
     }
@@ -13,7 +15,6 @@ public class PreferenciasLogin {
     }
 
 
-    private boolean recordarUsuario;
 
     public boolean isRecordarUsuario() {
         return recordarUsuario;
