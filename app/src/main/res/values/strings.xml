@@ -61,6 +61,7 @@
     <string name="descripcion">Descripcion</string>
     <string name="telefono">Telefono</string>
     <string name="favorito">Favorito</string>
+    <string name="usuario">Usuario</string>
 
 
 </resources>

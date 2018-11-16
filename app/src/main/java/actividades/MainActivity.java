@@ -105,6 +105,7 @@ import Modelo.Tienda;
 import Modelo.Usuario;
 import adaptadores.AdaptadorMascota;
 import adaptadores.AdaptadorPublicidades;
+import adaptadores.AdaptadorTIenda;
 import de.hdodenhof.circleimageview.CircleImageView;
 import dialogsFragments.DialogMarkerPet;
 import Modelo.Mascota;
@@ -162,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     RecyclerView recyclerPublicidad;
     RecyclerView recyclerFavoritos;
+    RecyclerView recyclerTienda;
 
     private Map<String,ArrayList<Mascota>> mListaMarcadoresMascotas;
     private Map<String,ArrayList<Tienda>> mListaMarcadoresTiendas;
@@ -428,6 +430,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }break;
             case R.id.nav_ajustes:{instaciarAjustes();}break;
        //     case R.id.floatingIsPremium:{instaciarMisMascotasFavoritas();break;}
+            case R.id.nav_misTiendas:{instaciarMisTiendas();}break;
             case R.id.nav_colaboradores:{startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.oferta.educacion.ulp&hl=es")));}break;
             case R.id.nav_mascota:{instaciarMisMascotas();}break;
             case R.id.nav_premium:{instaciarPremium();}break;
@@ -1256,5 +1259,64 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         dialog.show(getFragmentManager(), "MIS_MASCOTAS");// Mostramos el dialogo
 
     }*/
+
+
+    // ------------------------ DIALOG MIS MASCOTAS-----------------------------------------
+    @SuppressLint("ValidFragment")
+    private class MisTiendasDialog extends DialogFragment {
+        private ArrayList<Tienda>ListaMisTiendas;
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View content = inflater.inflate(R.layout.dialog_my_shops, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setView(content);
+            builder.setOnKeyListener((dialog, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    ListaMisTiendas.clear();
+                    dismiss();
+                }
+                return false;
+            });
+            ListaMisTiendas=new ArrayList<>();
+            CargarDatosTinedasRecyclerMisTiendas(content);
+            return builder.create();
+        }
+        private void CargarDatosTinedasRecyclerMisTiendas(View view) {
+            mDatabase.child("Usuarios").child(Objects.requireNonNull(mDatabase.child(UserId).getKey())).child("Marcadores").child("Shop").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot d:dataSnapshot.getChildren()){
+                        Tienda mTienda = d.getValue(Tienda.class);
+                        ListaMisTiendas.add(mTienda);
+                    }
+                    recyclerTienda = view.findViewById(R.id.RecViewTiendas);
+                    recyclerTienda.setLayoutManager(new LinearLayoutManager(view.getContext()));
+                    AdaptadorTIenda adapter = new AdaptadorTIenda(ListaMisTiendas,view.getContext());
+                    recyclerTienda.setAdapter(adapter);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
+        }
+
+    }
+///este metodo tiene que ver donde se  van a aguardar los favoritos  reccorrerlo, por eso salta el error en la line 1010
+
+
+    //cuando llames al boton de fb, deves ahcer lo mismo pero asigandole a listaFavorito y setear el campo del dialogo  que dice mis mascotas,  a mis favoritos...
+
+
+    private void instaciarMisTiendas(){
+        MisTiendasDialog dialog = new MisTiendasDialog();  //Instanciamos la clase con el dialogo
+        dialog.setCancelable(false);
+        dialog.show(getFragmentManager(), "MIS_TINDAS");// Mostramos el dialogo
+
+    }
+
+
+
+
 }
 

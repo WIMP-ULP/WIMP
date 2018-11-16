@@ -7,7 +7,7 @@
     android:background="@drawable/gradient_login">
 
     <LinearLayout
-        android:id="@+id/contenedorRecyclerMisMascotas"
+        android:id="@+id/contenedorRecyclerMisTiendas"
         android:layout_width="0dp"
         android:layout_height="479dp"
         android:layout_marginBottom="8dp"
@@ -18,7 +18,7 @@
 
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/RecViewFavoritos"
+            android:id="@+id/RecViewTiendas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/divider_config"
@@ -29,11 +29,11 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:listitem="@layout/item_mascota" />
+            tools:listitem="@layout/item_oferta" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/emisMascotas"
+        android:id="@+id/emisTiendas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -42,7 +42,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="MIS MASCOTAS"
+        android:text="MIS TIENDAS"
         android:textColor="@color/colorAccent"
         android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
         android:textSize="30sp"
@@ -63,7 +63,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="24dp"
         android:background="#C8C9CB"
-        app:layout_constraintBottom_toTopOf="@+id/contenedorRecyclerMisMascotas"
+        app:layout_constraintBottom_toTopOf="@+id/contenedorRecyclerMisTiendas"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.111"
         app:layout_constraintStart_toStartOf="parent" />

@@ -12,9 +12,9 @@
                 android:icon="@drawable/mascota"
                 android:title="Mis Mascotas" />
             <item
-                android:id="@+id/nav_buscado"
-                android:icon="@drawable/buscando"
-                android:title="Busquedas " />
+                android:id="@+id/nav_misTiendas"
+                android:icon="@drawable/tienda"
+                android:title="Mis Tiendas" />
 
             <item
                 android:id="@+id/nav_premium"
