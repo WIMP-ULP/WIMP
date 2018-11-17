@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,6 +35,8 @@ import com.whereismypet.whereismypet.R;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Objects;
 
 import Modelo.Comentario;
@@ -48,27 +51,30 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
     private Mascota mDatosMascotas;
     private EditText eComentario;
     private CircleImageView mImgFavoritos;
-    private int mEstadoTeclado = 0;
+    private int mEstadoTeclado = 0, mEstadoFavorito = 0;
     private ArrayList<Comentario> mListaComentario;
     private RecyclerView mRecyclerComentarios;
     private DatabaseReference mDatabase;
     private FirebaseUser mUserFireBase;
     boolean click = false;
     private FloatingActionButton fabComentar;
-
-
+    private ArrayList<Marcadores.Favoritos> mListaFavoritos;
+private int oncreate=0,onDismiss=0;
 
     public DialogShowPet(Mascota mDatosMascotas){
         this.mDatosMascotas = mDatosMascotas;
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mUserFireBase = FirebaseAuth.getInstance().getCurrentUser();
+        mListaFavoritos = new ArrayList<>();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        oncreate++;
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_marcador, null);
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mUserFireBase = FirebaseAuth.getInstance().getCurrentUser();
         mListaComentario = new ArrayList<>();
         eComentario = content.findViewById(R.id.eComentarMarcador);
         mImgFavoritos = content.findViewById(R.id.imgFavoritos);
@@ -76,11 +82,12 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
         eComentario.setOnClickListener(this);
         mImgFavoritos.setOnClickListener(this);
         fabComentar.setOnClickListener(this);
+        CargarFavoritos();
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
         builder.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                dismiss();
+                    dismiss();
             }
             return false;
         });
@@ -90,48 +97,58 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.eComentarMarcador:{
+        switch (v.getId()) {
+            case R.id.eComentarMarcador: {
                 InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-                if(mEstadoTeclado == 0){
+                if (mEstadoTeclado == 0) {
                     if (imm != null) {
                         eComentario.setText("");
                         mEstadoTeclado = 1;
                     }
-                }}break;
+                }
+            }
+            break;
             case R.id.imgFavoritos: {
-                mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.corazon_rojo));
-                mDatabase.child("Usuarios").child(mUserFireBase.getUid()).child("Marcadores").child("Favoritos").setValue(
-                        new Marcadores.Favoritos()
-                        .setIdFavoritos(GeneralMethod.getRandomString())
-                        .setFechaSeguir(new Date().toString())
-                        .setIdMarcadorSeguido(mDatosMascotas.getIdMarcador())
-                        .setIdUsuarioSeguidor(mUserFireBase.getUid()));
-                FirebaseMessaging.getInstance().subscribeToTopic(mDatosMascotas.getIdMarcador());
-                }break;
-            case R.id.fabComentar:{
-                    click = !click;
-                    mListaComentario.clear();
-                    Comentario mComentario = new Comentario()
-                            .setReceptorID(mDatosMascotas.getIdUsuario())
-                            .setEmisorID(mUserFireBase.getUid())
-                            .setCuerpo(eComentario.getText().toString())
-                            .setUrlFoto(mUserFireBase.getPhotoUrl().toString())
-                            .setFechaHora(new Date().toString())
-                            .setIdComentario(GeneralMethod.getRandomString())
-                            .setIdMarcador(mDatosMascotas.getIdMarcador());
-                    mDatabase.child("Usuarios").child(mComentario.getReceptorID()).child("Marcadores").child("Comentarios").child(mComentario.getIdComentario()).setValue(mComentario);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                        Interpolator interpolador = AnimationUtils.loadInterpolator(this.getActivity().getBaseContext(),
-                                android.R.interpolator.fast_out_slow_in);
-                        v.animate()
-                                .rotation(click ? 45f : 0)
-                                .setInterpolator(interpolador)
-                                .start();
+                if (mEstadoFavorito == 0) {
+                    mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.corazon_rojo));
+                    mEstadoFavorito = 1;
+                    FirebaseMessaging.getInstance().subscribeToTopic(mDatosMascotas.getIdMarcador());
+                    if (mListaFavoritos.size() == 0) {
+                        GrabarFavorito(new Marcadores.Favoritos()
+                                .setIdFavoritos(GeneralMethod.getRandomString())
+                                .setFechaSeguir(new Date().toString())
+                                .setIdUsuarioSeguidor(mUserFireBase.getUid()));
                     }
+                } else {
+                    mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.icono_corazon_sinreleno));
+                    mEstadoFavorito = 0;
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic(mDatosMascotas.getIdMarcador());
+
+                }
+            }
+            break;
+            case R.id.fabComentar: {
+                click = !click;
+                mListaComentario.clear();
+                Comentario mComentario = new Comentario()
+                        .setReceptorID(mDatosMascotas.getIdUsuario())
+                        .setEmisorID(mUserFireBase.getUid())
+                        .setCuerpo(eComentario.getText().toString())
+                        .setUrlFoto(mUserFireBase.getPhotoUrl().toString())
+                        .setFechaHora(new Date().toString())
+                        .setIdComentario(GeneralMethod.getRandomString())
+                        .setIdMarcador(mDatosMascotas.getIdMarcador());
+                mDatabase.child("Usuarios").child(mComentario.getReceptorID()).child("Marcadores").child("Comentarios").child(mComentario.getIdComentario()).setValue(mComentario);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    Interpolator interpolador = AnimationUtils.loadInterpolator(this.getActivity().getBaseContext(),
+                            android.R.interpolator.fast_out_slow_in);
+                    v.animate()
+                            .rotation(click ? 45f : 0)
+                            .setInterpolator(interpolador)
+                            .start();
+                }
             }
         }
-
     }
 
     private void CargarDatosMascota(View view) {
@@ -167,5 +184,34 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
         });
     }
 
+    private void GrabarFavorito(Marcadores.Favoritos mFavorito) {
+        mDatabase.child("Usuarios").child(mDatosMascotas.getIdUsuario()).child("Marcadores").child("Pet").child(mDatosMascotas.getIdMarcador()).child("Favoritos").child(mFavorito.getIdFavoritos()).setValue(mFavorito);
+        FirebaseMessaging.getInstance().subscribeToTopic(mDatosMascotas.getIdMarcador());
+    }
+    private void CargarFavoritos() {
+       mDatabase.child("Usuarios").child(mDatosMascotas.getIdUsuario()).child("Marcadores").child("Pet").child(mDatosMascotas.getIdMarcador()).child("Favoritos")
+               .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot mDataSnapshop : dataSnapshot.getChildren()) {
+                    if (mDataSnapshop != null && mDataSnapshop.getValue(Marcadores.Favoritos.class).getIdUsuarioSeguidor().equals(mUserFireBase.getUid())) {
+                        mListaFavoritos.add(mDataSnapshop.getValue(Marcadores.Favoritos.class));
+                    }
+                }
+                for (Marcadores.Favoritos fav : mListaFavoritos) {
+                    if(mUserFireBase.getUid().equals(fav.getIdUsuarioSeguidor())){
+                        mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.corazon_rojo));
+                        mEstadoFavorito = 1;
+                    }
+                    else{
+                        mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.icono_corazon_sinreleno));
+                        mEstadoFavorito = 0;
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+    }
 
 }

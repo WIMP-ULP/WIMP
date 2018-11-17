@@ -1,13 +1,11 @@
 package actividades;
 
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -86,17 +84,13 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.whereismypet.whereismypet.R;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 
-import Modelo.Comentario;
 import Modelo.CustomInfoWindowAdapter;
 import Modelo.Marcadores;
 import Modelo.PreferenciasLogin;
@@ -502,11 +496,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         mListaMarcadoresTiendas.put(keyUserShop, ListaMarcadoresTienda);
                     }
                }
-                for (Marcadores m : ListaMarcadoresMacota){
-                    CargarMarcadoresMascota((Mascota)m);
+                for (Mascota m : ListaMarcadoresMacota){
+                    CargarMarcadoresMascota(m);
                 }
-                for (Marcadores m : ListaMarcadoresTienda){
-                    CargarMarcadoresTienda((Tienda)m);
+                for (Tienda m : ListaMarcadoresTienda){
+                    CargarMarcadoresTienda(m);
                 }
             }
             @Override
@@ -548,13 +542,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         googleMap.setOnMarkerClickListener(marker -> {
-          for(Marcadores markerShop :ListaMarcadoresTienda) {
+          for(Tienda markerShop : ListaMarcadoresTienda) {
               if(marker.getTitle().equals(markerShop.getIdMarcador())) {
-                  instaciarDialogoMostrarMarcadorTienda((Tienda) markerShop); }
+                  instaciarDialogoMostrarMarcadorTienda(markerShop); }
           }
-          for(Marcadores markerPet :ListaMarcadoresMacota) {
+          for(Mascota markerPet : ListaMarcadoresMacota) {
               if (marker.getTitle().equals(markerPet.getIdMarcador())) {
-                  instaciarDialogoMostrarMarcadorMascota((Mascota) markerPet); }
+                  instaciarDialogoMostrarMarcadorMascota(markerPet); }
           }
           return false;
         });
