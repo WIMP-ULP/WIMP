@@ -59,7 +59,6 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
     boolean click = false;
     private FloatingActionButton fabComentar;
     private ArrayList<Marcadores.Favoritos> mListaFavoritos;
-private int oncreate=0,onDismiss=0;
 
     public DialogShowPet(Mascota mDatosMascotas){
         this.mDatosMascotas = mDatosMascotas;
@@ -72,7 +71,6 @@ private int oncreate=0,onDismiss=0;
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        oncreate++;
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_marcador, null);
         mListaComentario = new ArrayList<>();
@@ -110,19 +108,12 @@ private int oncreate=0,onDismiss=0;
             break;
             case R.id.imgFavoritos: {
                 if (mEstadoFavorito == 0) {
-                    mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.corazon_rojo));
-                    mEstadoFavorito = 1;
-                    FirebaseMessaging.getInstance().subscribeToTopic(mDatosMascotas.getIdMarcador());
-                    if (mListaFavoritos.size() == 0) {
-                        GrabarFavorito(new Marcadores.Favoritos()
-                                .setIdFavoritos(GeneralMethod.getRandomString())
-                                .setFechaSeguir(new Date().toString())
-                                .setIdUsuarioSeguidor(mUserFireBase.getUid()));
-                    }
+                        GrabarFavorito(new Marcadores.Favoritos().setFechaSeguir(new Date().toString()));
+
                 } else {
-                    mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.icono_corazon_sinreleno));
-                    mEstadoFavorito = 0;
+                    EliminaFavorito();
                     FirebaseMessaging.getInstance().unsubscribeFromTopic(mDatosMascotas.getIdMarcador());
+
 
                 }
             }
@@ -185,7 +176,8 @@ private int oncreate=0,onDismiss=0;
     }
 
     private void GrabarFavorito(Marcadores.Favoritos mFavorito) {
-        mDatabase.child("Usuarios").child(mDatosMascotas.getIdUsuario()).child("Marcadores").child("Pet").child(mDatosMascotas.getIdMarcador()).child("Favoritos").child(mFavorito.getIdFavoritos()).setValue(mFavorito);
+        mDatabase.child("Usuarios").child(mDatosMascotas.getIdUsuario()).child("Marcadores").child("Pet").child(mDatosMascotas.getIdMarcador()).child("Favoritos")
+                .child(mUserFireBase.getUid()).setValue(mFavorito);
         FirebaseMessaging.getInstance().subscribeToTopic(mDatosMascotas.getIdMarcador());
     }
     private void CargarFavoritos() {
@@ -193,25 +185,35 @@ private int oncreate=0,onDismiss=0;
                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot mDataSnapshop : dataSnapshot.getChildren()) {
-                    if (mDataSnapshop != null && mDataSnapshop.getValue(Marcadores.Favoritos.class).getIdUsuarioSeguidor().equals(mUserFireBase.getUid())) {
-                        mListaFavoritos.add(mDataSnapshop.getValue(Marcadores.Favoritos.class));
+                if (dataSnapshot.getValue()!=null)
+                {
+                    for (DataSnapshot mDataSnapshop : dataSnapshot.getChildren()) {
+                        if (mDataSnapshop != null && mDataSnapshop.getKey().equals(mUserFireBase.getUid())) {
+                            mListaFavoritos.add(mDataSnapshop.getValue(Marcadores.Favoritos.class));
+                            mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.corazon_rojo));
+                            FirebaseMessaging.getInstance().subscribeToTopic(mDatosMascotas.getIdMarcador());
+                            mEstadoFavorito = 1;
+                        }
+                        else{
+                            mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.icono_corazon_sinreleno));
+                            mEstadoFavorito = 0;
+                        }
                     }
+
                 }
-                for (Marcadores.Favoritos fav : mListaFavoritos) {
-                    if(mUserFireBase.getUid().equals(fav.getIdUsuarioSeguidor())){
-                        mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.corazon_rojo));
-                        mEstadoFavorito = 1;
-                    }
-                    else{
-                        mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.icono_corazon_sinreleno));
-                        mEstadoFavorito = 0;
-                    }
+                else{
+                    mImgFavoritos.setImageDrawable(getResources().getDrawable(R.drawable.icono_corazon_sinreleno));
+                    mEstadoFavorito = 0;
                 }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
+    }
+
+    private void EliminaFavorito(){
+        mDatabase.child("Usuarios").child(mDatosMascotas.getIdUsuario()).child("Marcadores").child("Pet").child(mDatosMascotas.getIdMarcador()).child("Favoritos")
+                .child(mUserFireBase.getUid()).removeValue();
     }
 
 }

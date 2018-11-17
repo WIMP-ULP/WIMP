@@ -26,10 +26,15 @@ import actividades.MainActivity;
 import finalClass.GeneralMethod;
 
 public class Notificacion extends BroadcastReceiver{
-
-    @Override
+    String body;
+    String title;
+    String icon;
     public void onReceive(Context context, Intent intent) {
-ManejaNotificacion noti=new ManejaNotificacion(context);
+        body= intent.getStringExtra("body");
+        title = intent.getStringExtra("title");
+        icon = intent.getStringExtra("icon");
+       new ManejaNotificacion(context)
+               .mostrarNotificacion(body,title,icon);
 //noti.mostrarNotificacion();
     }
 }
@@ -40,8 +45,6 @@ ManejaNotificacion noti=new ManejaNotificacion(context);
     private NotificationCompat.Builder mBuilder;
     //Attributes
     private long timeOut = -1;
-    private boolean autocancel = false;
-    private boolean imborrable = false;
 
     public ManejaNotificacion(Context context) {
         this.context = context;
@@ -65,38 +68,32 @@ ManejaNotificacion noti=new ManejaNotificacion(context);
         }
     }
 
-    public void mostrarNotificacion(String body,String icon, String title) {
+    public void mostrarNotificacion(String body, String title,String icon) {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                 new Intent( context , MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),PendingIntent.FLAG_ONE_SHOT);
 
         Uri sonido=RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Bitmap icono= getBitmapFromURL(icon);
         Uri ic =  Uri.parse( icon );
-        NotificationCompat.Builder notificacion = new NotificationCompat.Builder(this.context)
-                .setContentText(body)
-                .setAutoCancel(true)
-                .setSound(sonido)
-                .setContentTitle(title)
-                .setSmallIcon(R.drawable.icon_app)
-                .setContentIntent(pendingIntent);
-
-
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(0, notificacion.build());
         //com.whereismypet.whereismypet FIRMA
-
         RemoteViews notificationLayout = new RemoteViews(context.getPackageName(), R.layout.dialog_notificaciones);
-        notificationLayout.setTextViewText(R.id.textNotificacion, title);
+        notificationLayout.setTextViewText(R.id.titleNotificacion, title);
+        notificationLayout.setTextViewText(R.id.bodyNotificacion,body);
+        if(icon=="DEFAULT")
+        {
+            notificationLayout.setImageViewResource(R.id.imgNoti, R.drawable.icon_app);
+        }else{
+            notificationLayout.setImageViewUri(R.id.imgNoti, ic);
+        }
 
-        notificationLayout.setImageViewUri(R.id.imgNoti, ic);
         mBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID);
         mBuilder.setLargeIcon(icono)
         //.setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setCustomContentView(notificationLayout)
                 //.setCustomBigContentView(notificationLayoutExpanded)
                 .setTimeoutAfter(timeOut)
-                .setOngoing(imborrable)
-                .setAutoCancel(autocancel)
+                .setSound(sonido)
+                .setContentIntent(pendingIntent)
                 //.setLocalOnly(true)
                 .setLights(Color.GREEN, 1000, 1000)
                 .setPriority(NotificationCompat.PRIORITY_MAX);

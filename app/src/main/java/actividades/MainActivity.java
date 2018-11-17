@@ -176,12 +176,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Notificacion[] notificacion = new Notificacion[1];
         broadcastReceiverNotificacion=new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-              // notificacion[0] =new Notificacion(context);
-
+                Notificacion  notificacion = new Notificacion();
+                notificacion.onReceive(context,intent);
             }
         };
 
