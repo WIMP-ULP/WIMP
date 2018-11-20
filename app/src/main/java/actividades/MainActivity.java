@@ -67,6 +67,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -111,6 +112,7 @@ import Modelo.Mascota;
 import dialogsFragments.DialogMarkerShop;
 import dialogsFragments.DialogPremium;
 import dialogsFragments.DialogShowPet;
+import dialogsFragments.DialogShowShop;
 import finalClass.GeneralMethod;
 import finalClass.Utils;
 import servicios.Notificacion;
@@ -233,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         /*layoutFabPet = findViewById(R.id.layoutFabPet);
         layoutFabShop = findViewById(R.id.layoutFabShop);
         */
-        //ObtenerDatosPerfil();
+        ObtenerDatosPerfil();
 
         Escuchador();
 
@@ -441,6 +443,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return true;
     }
 
+    //----------------------------------ACTIVITY RESULT--------------------------------------------------------------------
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String aaa;
+    }
+
     //---------------------------------CARGA DE MARCADORES EN MAPA---------------------------------------------------------
 
     private void ConsultarMarcadores(){
@@ -544,10 +554,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 if (!success) {
                 }
             }
-        } catch (Resources.NotFoundException e) {
-        }
+        } catch (Resources.NotFoundException e) { }
 
         googleMap.setOnMarkerClickListener(marker -> {
+            for(Marcadores markerShop :ListaMarcadoresTienda) {
+                if (marker.getTitle().equals(markerShop.getIdMarcador())) {
+                    googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(MainActivity.this.getApplicationContext()), (Tienda) markerShop, this));
+                }
+            }
+            for(Marcadores markerPet :ListaMarcadoresMacota) {
+                if (marker.getTitle().equals(markerPet.getIdMarcador())) {
+                    googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(this.getApplicationContext()), (Mascota) markerPet, this));
+                }
+            }
+            return false;
+        });
+        googleMap.setOnInfoWindowClickListener(marker -> {
           for(Marcadores markerShop :ListaMarcadoresTienda) {
               if(marker.getTitle().equals(markerShop.getIdMarcador())) {
                   instaciarDialogoMostrarMarcadorTienda((Tienda) markerShop); }
@@ -556,7 +578,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
               if (marker.getTitle().equals(markerPet.getIdMarcador())) {
                   instaciarDialogoMostrarMarcadorMascota((Mascota) markerPet); }
           }
-          return false;
+
         });
     }
     private int getRaw(Context context, String name) {
@@ -971,7 +993,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setView(content);
-            builder.setNegativeButton("cerrar", (dialog, id) -> dialog.dismiss());
+            builder.setOnKeyListener((dialog, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    dismiss();
+                }
+                return false;
+            });
             return builder.create();
         }
     }
@@ -993,7 +1020,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setView(content);
-            builder.setNegativeButton("cerrar", (dialog, id) -> dialog.dismiss());
+            builder.setOnKeyListener((dialog, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    dismiss();
+                }
+                return false;
+            });
             return builder.create();
         }
     }
@@ -1133,8 +1165,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         dialog.setCancelable(false);
         dialog.show(getFragmentManager(), "MASCOTA");// Mostramos el dialogo
     }
+
+
+
+
+    //-----------------------------Mostrar datos de Tienda................................
+
+    private void instaciarDialogoMostrarMarcadorTienda(Tienda mDatosTienda) {
+        DialogShowShop dialog = new DialogShowShop(mDatosTienda);  //Instanciamos la clase con el dialogo
+
+        dialog.setCancelable(false);
+        dialog.show(getFragmentManager(), "TIENDA");// Mostramos el dialogo
+    }
+
+
+
+
+
     // -------------------------------- Mostrar datos de Tienda..........................................
-    @SuppressLint("ValidFragment")
+ /*   @SuppressLint("ValidFragment")
     private class DialogMostrarMarcadorTienda extends DialogFragment implements View.OnClickListener {
         Marcadores mDatosTienda;
         public DialogMostrarMarcadorTienda(Tienda mDatosTienda){
@@ -1176,35 +1225,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             GeneralMethod.GlideUrl(this.getActivity(), mTienda.getImagen(),imgTienda);
 
             // CargarPublicidadesTienda(mTienda,view);
-        }
+        }*/
 
-        private void CargarPublicidadesTienda(Tienda mTienda,View view) {
-            mDatabase.child("Usuarios").child(Objects.requireNonNull(mTienda.getIdMarcador()))
-                    .child("Marcadores").child("Publicidad").child(mTienda.getIdPublicidad()).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.i("PUBLICIDAD", dataSnapshot.toString());
-                    Publicidad mPublicidad=dataSnapshot.getValue(Publicidad.class);
 
-                    ListaPublicidad.add(mPublicidad);
-                    recyclerPublicidad = view.findViewById(R.id.RecViewPublicidad);
-                    recyclerPublicidad.setLayoutManager(new LinearLayoutManager(view.getContext()));
-                    AdaptadorPublicidades adapter = new AdaptadorPublicidades(ListaPublicidad,view.getContext());
-                    recyclerPublicidad.setAdapter(adapter);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
     }
 
-    private void instaciarDialogoMostrarMarcadorTienda(Tienda mDatosTienda) {
-        DialogMostrarMarcadorTienda dialog = new DialogMostrarMarcadorTienda(mDatosTienda);  //Instanciamos la clase con el dialogo
-        dialog.setCancelable(false);
-        dialog.show(getFragmentManager(), "MASCOTA");// Mostramos el dialogo
-    }
 
 
 
@@ -1257,5 +1282,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         dialog.show(getFragmentManager(), "MIS_MASCOTAS");// Mostramos el dialogo
 
     }*/
-}
+
 

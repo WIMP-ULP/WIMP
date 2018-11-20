@@ -2,13 +2,14 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_login">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="350dp">
+        android:layout_height="501dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgMascota"
@@ -16,7 +17,9 @@
             android:layout_height="80dp"
             android:layout_alignTop="@+id/ContenedorEditText"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/huella_mascota" />
+            android:src="@drawable/huella_mascota"
+            app:civ_border_color="#ced31f8c"
+            app:civ_border_width="2dp" />
 
         <TextView
             android:id="@+id/Mascota"
@@ -25,8 +28,8 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:paddingTop="@dimen/padding_between"
             android:paddingBottom="@dimen/padding_between"
+            android:paddingTop="@dimen/padding_between"
             android:text="Mascota"
             android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
             android:textSize="24sp"
@@ -55,7 +58,7 @@
         <LinearLayout
             android:id="@+id/ContenedorEditText"
             android:layout_width="321dp"
-            android:layout_height="250dp"
+            android:layout_height="386dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="72dp"
@@ -63,41 +66,82 @@
 
             <EditText
                 android:id="@+id/input_nombre"
+                style="@style/StyleEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 android:layout_marginTop="80dp"
+                android:backgroundTint="#ced2238d"
                 android:ems="10"
                 android:hint="@string/nombre"
                 android:inputType="textPersonName"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white" />
+
+                />
 
             <EditText
                 android:id="@+id/input_telefono"
+                style="@style/StyleEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/normal_padding"
+                android:backgroundTint="#ced2238d"
                 android:ems="10"
                 android:hint="@string/telefono"
                 android:inputType="textPersonName"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <EditText
+                android:id="@+id/input_descripcion"
+                style="@style/StyleEditText"
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                android:layout_marginBottom="@dimen/padding_between"
+                android:layout_marginTop="@dimen/normal_padding"
+                android:backgroundTint="#ced2238d"
+                android:ems="10"
+                android:fadeScrollbars="true"
+                android:gravity="top"
+                android:hint="Descripcion"
+                android:inputType="text|textMultiLine"
+                android:padding="@dimen/edit_text_padding"
+                android:singleLine="false"
+                android:textAlignment="gravity"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white" />
 
-            <EditText
-                android:id="@+id/input_descripcion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/normal_padding"
-                android:layout_marginBottom="@dimen/padding_between"
-                android:ems="10"
-                android:hint="Descripcion"
-                android:inputType="textMultiLine"
-                android:padding="@dimen/edit_text_padding"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white" />
+            <android.support.v7.widget.CardView
+                android:id="@+id/btnGuardarMarcadorMascota"
+                android:layout_width="286dp"
+                android:layout_height="46dp"
+                android:layout_below="@+id/input_descripcion"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="20dp"
+                app:cardBackgroundColor="@color/colorAccent"
+                app:cardCornerRadius="25dp"
+                app:cardElevation="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/RecordarSesion">
+
+                <RelativeLayout
+                    android:layout_width="284dp"
+                    android:layout_height="34dp"
+                    tools:layout_editor_absoluteX="8dp"
+                    tools:layout_editor_absoluteY="8dp">
+
+                    <TextView
+                        android:id="@+id/tvIniciarSesion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="98dp"
+                        android:text="Guardar"
+                        android:textColor="#fff"
+                        android:textSize="18sp" />
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
 
 
         </LinearLayout>

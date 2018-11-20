@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.whereismypet.whereismypet.R;
 import java.util.ArrayList;
 
+import Modelo.Oferta;
 import Modelo.Publicidad;
 import de.hdodenhof.circleimageview.CircleImageView;
 import finalClass.GeneralMethod;
@@ -19,11 +20,11 @@ import finalClass.GeneralMethod;
 public class AdaptadorPublicidades extends RecyclerView.Adapter<AdaptadorPublicidades.ViewHolderPublicidades> implements View.OnClickListener{
 
     private View.OnClickListener listenerOfertas;
-    private ArrayList<Publicidad> ListaPublicidades;
+    private ArrayList<Oferta> ListaOfertas;
     private Context context;
 
-    public AdaptadorPublicidades(ArrayList<Publicidad> ofertas,Context context) {
-        this.ListaPublicidades = ofertas;
+    public AdaptadorPublicidades(ArrayList<Oferta> ofertas,Context context) {
+        this.ListaOfertas = ofertas;
         this.context=context;
     }
 
@@ -37,10 +38,10 @@ public class AdaptadorPublicidades extends RecyclerView.Adapter<AdaptadorPublici
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolderPublicidades holder, int pos) {
-        holder.tvtitulo.setText( ListaPublicidades.get(pos).getTituloOferta() );
-        holder.tvprecio.setText( ListaPublicidades.get(pos).getPrecio() );
-        holder.tvdescripcion.setText( ListaPublicidades.get(pos).getDescripcionOferta() );
-        GeneralMethod.GlideUrl((Activity) context, ListaPublicidades.get(pos).getImgOferta(),holder.ivOferta);
+        holder.tvtitulo.setText( ListaOfertas.get(pos).getTituloOferta() );
+        holder.tvprecio.setText( ListaOfertas.get(pos).getPrecio() );
+        holder.tvdescripcion.setText( ListaOfertas.get(pos).getDescripcionOferta() );
+        GeneralMethod.GlideUrl((Activity) context, ListaOfertas.get(pos).getImgOferta(),holder.ivOferta);
 
 
     }
@@ -72,7 +73,7 @@ public class AdaptadorPublicidades extends RecyclerView.Adapter<AdaptadorPublici
     @Override
     public int getItemCount()
     {
-        return ListaPublicidades.size();
+        return ListaOfertas.size();
     }
 
 

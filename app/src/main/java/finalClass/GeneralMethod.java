@@ -65,24 +65,6 @@ public final class GeneralMethod {
         return pathTomarFoto;
     }
 
-    //-----------------------------------Imagen Circular----------------------------------------------------------------
-    public static Bitmap getBitmapClip(Bitmap bitmap) {
-        int maxLenth = bitmap.getWidth() <= bitmap.getHeight() ? bitmap.getWidth() : bitmap.getHeight();
-        Bitmap output = Bitmap.createBitmap(maxLenth,
-                maxLenth, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, maxLenth, maxLenth);
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        canvas.drawCircle(maxLenth / 2, maxLenth / 2,
-                maxLenth / 2, paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-        return output;
-    }
     //---------------------------------------VALIDACIONES DE COMPONENTES------------------------------------------------
 
 

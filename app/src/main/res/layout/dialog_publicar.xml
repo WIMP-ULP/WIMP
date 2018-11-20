@@ -9,28 +9,35 @@
     android:orientation="vertical"
     android:padding="5dp">
 
-    <EditText
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/mFotoItemOFerta"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/defaultproducto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+
+    <EditText
         android:id="@+id/Titulo_publi"
         android:layout_width="323dp"
-        android:layout_height="wrap_content"
+        android:layout_height="46dp"
         android:layout_gravity="center"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="8dp"
 
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:inputType="text"
         android:textColor="#C8C9CB"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/Descripcion_publi"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.511"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.061"
-        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@+id/mFotoItemOFerta"
         tools:text="Titulo" />
 
     <EditText
@@ -64,35 +71,15 @@
         android:layout_marginBottom="8dp"
         android:inputType="text"
         android:text="Descripción"
+
+
         android:textColor="#C8C9CB"
         android:textSize="18sp"
-
-
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/Precio_publi"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.522"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Titulo_publi"
-        tools:ignore="MissingConstraints" />
-
-    <Button
-        android:id="@+id/BtnSubirImagenPubli"
-        android:layout_width="match_parent"
-        android:layout_height="47dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/colorAccent"
-        android:drawableStart="@drawable/dialog_file_upload_white_24dp"
-        android:text="@string/subir_imagen"
-        android:textColor="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/BtnAceptaryPublicarPubli"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Precio_publi"
         tools:ignore="MissingConstraints" />
 
     <Button
@@ -101,14 +88,16 @@
         android:layout_height="51dp"
         android:layout_gravity="center"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@color/colorAccent"
         android:text="@string/aceptar_y_publicar"
         android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/BtnSubirImagenPubli"
+        app:layout_constraintTop_toBottomOf="@+id/Precio_publi"
         tools:ignore="MissingConstraints" />
 
 </android.support.constraint.ConstraintLayout>

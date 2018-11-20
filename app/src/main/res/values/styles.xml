@@ -31,4 +31,16 @@
         <item name="colorControlActivated">#ced2238d</item>
     </style>
 
+    <style name="StyleEditText" parent="TextAppearance.AppCompat">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/md_white_1000</item>
+        <item name="android:textSize">20sp</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">#ced2238d</item>
+        <item name="colorControlNormal">#ced2238d</item>
+        <item name="colorControlActivated">#ced2238d</item>
+    </style>
+
+
+
 </resources>

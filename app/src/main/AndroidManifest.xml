@@ -115,6 +115,12 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <receiver android:name="servicios.Notificacion">
+            <intent-filter >
+                <action android:name="com.whereismypet.whereismypet.MainActivity.NOTIFICACION" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

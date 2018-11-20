@@ -27,9 +27,9 @@
             android:id="@+id/eTelefonoMascota"
             android:layout_width="114dp"
             android:layout_height="31dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="120dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
             android:text="@string/telefono"
             android:textAlignment="textStart"
             android:textColor="@android:color/white"
@@ -54,14 +54,27 @@
             app:layout_constraintTop_toBottomOf="@+id/RecViewComentario"
             app:layout_constraintVertical_bias="1.0" />
 
+        <View
+            android:id="@+id/divider"
+            android:layout_width="334dp"
+            android:layout_height="2dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="18dp"
+            android:layout_marginStart="18dp"
+            android:background="#C8C9CB"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/eNombreMascota" />
+
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/eNombreMascota">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imgFotomascota"
@@ -71,6 +84,8 @@
                 android:contentDescription="@string/imagenmarcador"
                 android:padding="10dp"
                 android:src="@drawable/mascota"
+                app:civ_border_color="#ced31f8c"
+                app:civ_border_width="2dp"
                 tools:layout_editor_absoluteX="277dp" />
         </LinearLayout>
 
@@ -94,18 +109,19 @@
             android:id="@+id/eDescripcionMascota"
             android:layout_width="203dp"
             android:layout_height="67dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="200dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:text="@string/descripcion"
             android:textAlignment="textStart"
             android:textColor="@android:color/white"
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/RecViewComentario"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/linearLayout2"
-            app:layout_constraintTop_toBottomOf="@+id/eTelefonoMascota" />
+            app:layout_constraintTop_toBottomOf="@+id/eTelefonoMascota"
+            app:layout_constraintVertical_bias="0.333" />
 
 
         <android.support.v7.widget.RecyclerView
@@ -124,33 +140,16 @@
         </android.support.v7.widget.RecyclerView>
 
         <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imgFavoritos"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/icono_corazon_sinreleno"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints"
-        />
-
-        <ImageView
-            android:id="@+id/imgSinCompentarios"
-            android:layout_width="342dp"
-            android:layout_height="342dp"
-            android:layout_marginStart="40dp"
+            android:id="@+id/imgFavoritos"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="36dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="40dp"
-            android:layout_marginBottom="8dp"
-            android:contentDescription="Favorito"
-            app:layout_constraintBottom_toBottomOf="@+id/include"
+            android:background="@drawable/icono_corazon_sinreleno"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.546"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/RecViewComentario"
-            app:srcCompat="@drawable/ic_sincomentarios"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints" />
+
     </android.support.constraint.ConstraintLayout>
 
 

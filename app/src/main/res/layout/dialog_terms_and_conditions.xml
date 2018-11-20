@@ -42,23 +42,31 @@
     <ScrollView
         android:id="@+id/scrTerminos"
         android:layout_width="wrap_content"
-        android:layout_height="400dp"
+        android:layout_height="396dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="12dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider_nosotros_star">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="25dp"
+            android:background="@drawable/borde">
+
             <TextView
                 android:id="@+id/tvTextoTerminos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:fontFamily="serif"
                 android:text="              Condiciones generales y uso:
     El uso de la aplicacion movil(WIMP), el cual es operado por alumnos de la Universidad De La Punta, en San Luis Argentina.
@@ -102,9 +110,10 @@ En caso de incumplir con estas prohibiciones y/o con la legislación aplicable, 
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="invisible"
         app:cardBackgroundColor="@color/colorAccent"
         app:cardCornerRadius="25dp"
         app:cardElevation="10dp"
@@ -114,7 +123,8 @@ En caso de incumplir con estas prohibiciones y/o con la legislación aplicable, 
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="invisible">
 
             <TextView
                 android:id="@+id/tvAceptarTerminos"

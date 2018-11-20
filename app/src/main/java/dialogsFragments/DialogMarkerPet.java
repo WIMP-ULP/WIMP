@@ -20,6 +20,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -74,6 +75,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
     private String pathCapturePets;
     private Uri mUriMascotaMarcador;
 
+    CardView mGuardarMascota;
     private ProgressDialog progressDialog;
     private final Activity mActivityMarkerPet = this.getActivity();
 
@@ -100,23 +102,12 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
       //  mFavoritosRojo.setOnClickListener(this);
         mStorageReference = FirebaseStorage.getInstance().getReference();
         mUserFireBase = FirebaseAuth.getInstance().getCurrentUser();
+
+        mGuardarMascota = content.findViewById(R.id.btnGuardarMarcadorMascota);
+        mGuardarMascota.setOnClickListener(this);
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
-        builder.setPositiveButton("GUARDAR", (dialog, id) -> {
-            Marcadores mMascota = new Mascota()
-                    .setIdMarcador(GeneralMethod.getRandomString())
-                    .setIdUsuario(Objects.requireNonNull(mUserFireBase).getUid())
-                    .setNombre(mNombreMascotaMarcador.getText().toString())
-                    .setDescripcion(mDescripcionMascotaMarcador.getText().toString())
-                    .setLatitud(String.valueOf(latLng.latitude))
-                    .setLongitud(String.valueOf(latLng.longitude))
-                    .setTelefono(mTelefonoMascotaMarcador.getText().toString())
-                    .setLongitud(String.valueOf(latLng.longitude))
-                    .setDireccion(/*GeneralMethod.ObtenerDireccion(latLng.latitude,latLng.longitude,this.getActivity())*/"DIRECCION DE MIERDA");
-            RegistrarMarcadorDeMascota((Mascota) mMascota);
-            if(ValidarCargaDeMascota(content)){
-            RegistrarMarcadorDeMascota((Mascota) mMascota);}
-        });
+
         builder.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 dismiss();
@@ -150,6 +141,20 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
 
             }break;
             case R.id.imgfavoritoRojo:{
+
+            }
+            case R.id.btnGuardarMarcadorMascota:{
+                Marcadores mMascota = new Mascota()
+                        .setIdMarcador(GeneralMethod.getRandomString())
+                        .setIdUsuario(Objects.requireNonNull(mUserFireBase).getUid())
+                        .setNombre(mNombreMascotaMarcador.getText().toString())
+                        .setDescripcion(mDescripcionMascotaMarcador.getText().toString())
+                        .setLatitud(String.valueOf(latLng.latitude))
+                        .setLongitud(String.valueOf(latLng.longitude))
+                        .setTelefono(mTelefonoMascotaMarcador.getText().toString())
+                        .setLongitud(String.valueOf(latLng.longitude))
+                        .setDireccion(/*GeneralMethod.ObtenerDireccion(latLng.latitude,latLng.longitude,this.getActivity())*/"DIRECCION PROVISORIA");
+                RegistrarMarcadorDeMascota((Mascota) mMascota);
 
             }
         }
@@ -210,7 +215,7 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                     mUriMascotaMarcador = Objects.requireNonNull(data).getData();
                     tipoDeFoto = "SELECCIONA";
                     try {
-                        mFotoMascotaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(MediaStore.Images.Media.getBitmap(DialogMarkerPet.this.getActivity().getContentResolver(), mUriMascotaMarcador)));
+                        mFotoMascotaMarcador.setImageBitmap(MediaStore.Images.Media.getBitmap(DialogMarkerPet.this.getActivity().getContentResolver(), mUriMascotaMarcador));
                         mUriMascotaMarcador = GeneralMethod.reducirTamano(mUriMascotaMarcador,this.getActivity());
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -218,14 +223,14 @@ public class DialogMarkerPet extends DialogFragment implements View.OnClickListe
                 }break;
                 case Utils.COD_FOTO: {
                     MediaScannerConnection.scanFile(DialogMarkerPet.this.getActivity(), new String[]{pathCapturePets}, null,(path, uri) -> Log.i("Path", "" + path));
-                    mFotoMascotaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeFile(pathCapturePets)));
+                    mFotoMascotaMarcador.setImageBitmap(BitmapFactory.decodeFile(pathCapturePets));
                     mUriMascotaMarcador = Uri.fromFile(new File(pathCapturePets));
                     mUriMascotaMarcador = GeneralMethod.reducirTamano(mUriMascotaMarcador,this.getActivity());
                     tipoDeFoto = "FOTO";
                 } break;
             }
         } else {
-            mFotoMascotaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeResource(getResources(),R.drawable.huella_mascota)));
+            mFotoMascotaMarcador.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.huella_mascota));
         }
     }
 

@@ -1,58 +1,34 @@
 package Modelo;
 
+import java.util.ArrayList;
+
 /**
  * Created by dafunes on 12/10/2018.
  */
 
 public class Publicidad {
 
+ArrayList<Oferta> Listaoferta;
 
-    private String idPublicidad;
-    private String tituloOferta;
-    private String precio;
-    private String descripcionOferta;
-    private String imgOferta;
+    private String fechaInicio;
+    private String fechaFin;
 
-    public void setIdPublicidad(String idPublicidad) {
-        this.idPublicidad = idPublicidad;
+    public String getFechaInicio() {
+        return fechaInicio;
     }
 
-    public void setImgOferta(String imgOferta) {
-        this.imgOferta = imgOferta;
+    public Publicidad setFechaInicio(String fechaInicio) {
+        this.fechaInicio = fechaInicio;
+        return this;
     }
 
-    public String getTituloOferta() {
-        return tituloOferta;
+    public Publicidad setFechaFin(String fechaFin) {
+        this.fechaFin = fechaFin;
+        return this;
     }
 
-    public void setTituloOferta(String tituloOferta) {
-        this.tituloOferta = tituloOferta;
-    }
-
-    public String getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(String precio) {
-        this.precio = precio;
-    }
-
-    public String getDescripcionOferta() {
-        return descripcionOferta;
-    }
-
-    public void setDescripcionOferta(String descripcionOferta) {
-        this.descripcionOferta = descripcionOferta;
-    }
-
-
-
-    public String getIdPublicidad() {
-        return idPublicidad;
-    }
-
-    public String getImgOferta() {
-        return imgOferta;
+    public String getFechaFin() {
+        return fechaFin;
     }
 
 }

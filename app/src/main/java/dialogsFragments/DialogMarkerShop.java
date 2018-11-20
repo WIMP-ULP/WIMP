@@ -19,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -73,6 +74,8 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
     private StorageReference mStorageReference;
     private String pathCaptureShop;
 
+    CardView mguardarTienda;
+
     private ProgressDialog progressDialog;
 
     public DialogMarkerShop(GoogleMap map, LatLng latLng) {
@@ -97,23 +100,14 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
         mUserFireBase = FirebaseAuth.getInstance().getCurrentUser();
         mStorageReference = FirebaseStorage.getInstance().getReference();
 
+        mguardarTienda = content.findViewById(R.id.btnGuardarMarcadorTienda);
+        mguardarTienda.setOnClickListener(this);
+
+
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
 
-        builder.setPositiveButton("GUARDAR", (dialogInterface, i) -> {
-            Marcadores mTienda = new Tienda()
-                    .setIdPublicidad("TODAVIA NO TENGO")
-                    .setIdUsuario(mUserFireBase.getUid())
-                    .setIdMarcador(GeneralMethod.getRandomString())
-                    .setDireccion(mDireccionTiendaMarcador.getText().toString())
-                    .setLongitud(String.valueOf(mLatLng.longitude))
-                    .setLatitud(String.valueOf(mLatLng.latitude))
-                    .setNombre(mNombreTiendaMarcador.getText().toString())
-                    .setDescripcion(mDescripcionTiendaMarcador.getText().toString())
-                    .setTelefono(mTelefonoTiendaMarcador.getText().toString());
-            RegistrarMarcadorDeTienda((Tienda)mTienda);
-        });
         builder.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 dismiss();
@@ -144,7 +138,22 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
                     mostrarDialogOpciones();
                 }
             }break;
+            case R.id.btnGuardarMarcadorTienda:
+            {
+                Marcadores mTienda = new Tienda()
+                        .setIdPublicidad("TODAVIA NO TENGO")
+                        .setIdUsuario(mUserFireBase.getUid())
+                        .setIdMarcador(GeneralMethod.getRandomString())
+                        .setDireccion(mDireccionTiendaMarcador.getText().toString())
+                        .setLongitud(String.valueOf(mLatLng.longitude))
+                        .setLatitud(String.valueOf(mLatLng.latitude))
+                        .setNombre(mNombreTiendaMarcador.getText().toString())
+                        .setDescripcion(mDescripcionTiendaMarcador.getText().toString())
+                        .setTelefono(mTelefonoTiendaMarcador.getText().toString());
+                RegistrarMarcadorDeTienda((Tienda)mTienda);
+            }
         }
+
     }
 
     @Override
@@ -157,20 +166,20 @@ public class DialogMarkerShop extends DialogFragment implements View.OnClickList
                     mUriTiendaMarcador = Objects.requireNonNull(data).getData();
                     tipoDeFoto = "SELECCIONA";
                     try {
-                        mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(MediaStore.Images.Media.getBitmap(DialogMarkerShop.this.getActivity().getContentResolver(), mUriTiendaMarcador)));
+                        mFotoTiendaMarcador.setImageBitmap((MediaStore.Images.Media.getBitmap(DialogMarkerShop.this.getActivity().getContentResolver(), mUriTiendaMarcador)));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }break;
                 case Utils.COD_FOTO: {
                     MediaScannerConnection.scanFile(DialogMarkerShop.this.getActivity(), new String[]{pathCaptureShop}, null,(path, uri) -> Log.i("Path", "" + path));
-                    mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeFile(pathCaptureShop)));
+                    mFotoTiendaMarcador.setImageBitmap(BitmapFactory.decodeFile(pathCaptureShop));
                     mUriTiendaMarcador = Uri.fromFile(new File(pathCaptureShop));
                     tipoDeFoto = "FOTO";
                 } break;
             }
         } else {
-            mFotoTiendaMarcador.setImageBitmap(GeneralMethod.getBitmapClip(BitmapFactory.decodeResource(getResources(),R.drawable.com_facebook_profile_picture_blank_square)));
+            mFotoTiendaMarcador.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.com_facebook_profile_picture_blank_square));
         }
     }
 

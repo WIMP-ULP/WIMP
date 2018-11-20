@@ -76,6 +76,15 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
         eComentario.setOnClickListener(this);
         mImgFavoritos.setOnClickListener(this);
         fabComentar.setOnClickListener(this);
+        click = !click;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Interpolator interpolador = AnimationUtils.loadInterpolator(this.getActivity().getBaseContext(),
+                    android.R.interpolator.fast_out_slow_in);
+            fabComentar.animate()
+                    .rotation(click ? 45f : 0)
+                    .setInterpolator(interpolador)
+                    .start();
+        }
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(content);
         builder.setOnKeyListener((dialog, keyCode, event) -> {
@@ -110,7 +119,6 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
                 FirebaseMessaging.getInstance().subscribeToTopic(mDatosMascotas.getIdMarcador());
                 }break;
             case R.id.fabComentar:{
-                    click = !click;
                     mListaComentario.clear();
                     Comentario mComentario = new Comentario()
                             .setReceptorID(mDatosMascotas.getIdUsuario())
@@ -121,14 +129,7 @@ public class DialogShowPet extends DialogFragment implements View.OnClickListene
                             .setIdComentario(GeneralMethod.getRandomString())
                             .setIdMarcador(mDatosMascotas.getIdMarcador());
                     mDatabase.child("Usuarios").child(mComentario.getReceptorID()).child("Marcadores").child("Comentarios").child(mComentario.getIdComentario()).setValue(mComentario);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                        Interpolator interpolador = AnimationUtils.loadInterpolator(this.getActivity().getBaseContext(),
-                                android.R.interpolator.fast_out_slow_in);
-                        v.animate()
-                                .rotation(click ? 45f : 0)
-                                .setInterpolator(interpolador)
-                                .start();
-                    }
+
             }
         }
 

@@ -20,9 +20,10 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.744">
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/eTelefonoTienda"
@@ -105,14 +106,14 @@
             android:layout_width="342dp"
             android:layout_height="291dp"
             android:layout_marginBottom="12dp"
-            app:layout_constraintBottom_toTopOf="@+id/BtnComentar"
+            app:layout_constraintBottom_toTopOf="@+id/btnPublicar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="MissingConstraints"
             tools:listitem="@layout/item_oferta"></android.support.v7.widget.RecyclerView>
 
         <Button
-            android:id="@+id/BtnComentar"
+            android:id="@+id/btnPublicar"
             android:layout_width="match_parent"
             android:layout_height="57dp"
             android:layout_marginBottom="4dp"
@@ -121,9 +122,9 @@
             android:padding="20dp"
             android:text="Publicar"
             android:textAlignment="center"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:ignore="MissingConstraints"
-            android:textColor="#FFFFFF"
             tools:layout_editor_absoluteX="0dp" />
 
         <ImageView

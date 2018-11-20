@@ -31,7 +31,7 @@ public final class Utils {
     public static  final String mDefaultUser = "https://firebasestorage.googleapis.com/v0/b/wimp-219219.appspot.com/o/Imagenes%2FPerfil%2FdefaultUser.jpg?alt=media&token=0651674e-50a9-45f6-990e-f36e3928fe98";
     public static final String mDefaultPet = "https://firebasestorage.googleapis.com/v0/b/wimp-219219.appspot.com/o/Imagenes%2FMarcadores%2FPet%2FdefaultPet.png?alt=media&token=9b6a329a-58ca-4ff7-81ec-46def18e9798";
     public static final String mDefautMarkerShop = "https://firebasestorage.googleapis.com/v0/b/wimp-219219.appspot.com/o/Imagenes%2FMarcadores%2FShop%2FdefaultShop.png?alt=media&token=ca7b5630-d219-489c-b0f5-a0a75daed0ac";
-
+public static final String mDefaultItemOferta="https://firebasestorage.googleapis.com/v0/b/wimp-219219.appspot.com/o/Imagenes%2FPublicidad%2FDefaultProducto.png?alt=media&token=56348866-fda6-40ff-b014-41615b6b6295";
     //PATH
     public static String pathTomarFoto;
     //VALIDACIONES

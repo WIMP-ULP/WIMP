@@ -36,7 +36,9 @@
         android:src="@drawable/com_facebook_profile_picture_blank_square"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:civ_border_color="#ced31f8c"
+        app:civ_border_width="2dp"/>
     <RelativeLayout
 
         android:id="@+id/DatosPersonales"
